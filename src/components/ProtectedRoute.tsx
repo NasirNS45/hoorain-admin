@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 import { AdminLayout } from "@/layouts/AdminLayout";
+import { BrandMark } from "@/components/BrandMark";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { getAccessToken } from "@/lib/api";
 
@@ -14,7 +15,8 @@ export function ProtectedRoute() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
+        <BrandMark className="h-10 w-10" />
         Loading HOORAIN admin
       </div>
     );

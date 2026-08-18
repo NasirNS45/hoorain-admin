@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { BrandMark } from "@/components/BrandMark";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -175,9 +176,20 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           collapsed ? "w-[72px]" : "w-60",
         )}
       >
-        <div className="flex h-14 shrink-0 items-center justify-between border-b border-border px-3">
+        <div
+          className={cn(
+            "flex shrink-0 items-center border-b border-border",
+            collapsed ? "flex-col gap-1 px-2 py-2" : "h-14 gap-2 px-3",
+          )}
+        >
+          <BrandMark className="h-8 w-8 shrink-0" />
           {!collapsed && <span className="font-display text-2xl tracking-wide">HOORAIN</span>}
-          <Button variant="ghost" size="icon" onClick={() => setCollapsed((value) => !value)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(!collapsed && "ml-auto")}
+            onClick={() => setCollapsed((value) => !value)}
+          >
             <ChevronLeft className={cn("h-4 w-4", collapsed && "rotate-180")} />
           </Button>
         </div>
@@ -195,7 +207,10 @@ export function AdminLayout({ children }: { children: ReactNode }) {
               </Button>
             </SheetTrigger>
             <SheetContent className="flex flex-col overflow-hidden">
-              <p className="mb-6 shrink-0 font-display text-2xl">HOORAIN</p>
+              <div className="mb-6 flex shrink-0 items-center gap-2">
+                <BrandMark className="h-8 w-8" />
+                <p className="font-display text-2xl">HOORAIN</p>
+              </div>
               <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1">
                 <SidebarNav collapsed={false} />
               </div>
