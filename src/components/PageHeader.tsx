@@ -81,7 +81,6 @@ export function PaginationBar({
   onPage: (page: number) => void;
 }) {
   const pages = Math.max(1, Math.ceil(total / limit));
-  if (total <= limit) return null;
   return (
     <div className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
       <p>
