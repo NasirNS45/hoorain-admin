@@ -10,9 +10,6 @@ import { CollectionFormPage } from "@/features/catalog/CollectionFormPage";
 import { CollectionListPage } from "@/features/catalog/CollectionListPage";
 import { ProductFormPage } from "@/features/catalog/ProductFormPage";
 import { ProductListPage } from "@/features/catalog/ProductListPage";
-import { HomepagePage } from "@/features/content/HomepagePage";
-import { HeroPage } from "@/features/content/HeroPage";
-import { SectionsPage } from "@/features/content/SectionsPage";
 import { CustomerDetailPage } from "@/features/customers/CustomerDetailPage";
 import { CustomerListPage } from "@/features/customers/CustomerListPage";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
@@ -22,10 +19,6 @@ import { AdjustmentsPage } from "@/features/inventory/AdjustmentsPage";
 import { StockPage } from "@/features/inventory/StockPage";
 import { OrderDetailPage } from "@/features/orders/OrderDetailPage";
 import { OrderListPage } from "@/features/orders/OrderListPage";
-import { PoliciesPage } from "@/features/store/PoliciesPage";
-import { ShippingPage } from "@/features/store/ShippingPage";
-import { SocialPage } from "@/features/store/SocialPage";
-import { StoreSettingsPage } from "@/features/store/StoreSettingsPage";
 import { AuditPage } from "@/features/system/AuditPage";
 import { UserFormPage } from "@/features/system/UserFormPage";
 import { UserListPage } from "@/features/system/UserListPage";
@@ -86,13 +79,6 @@ export function App() {
           <Route path="/orders/:id" element={<OrderDetailPage />} />
           <Route path="/customers" element={<CustomerListPage />} />
           <Route path="/customers/:id" element={<CustomerDetailPage />} />
-          <Route path="/content/homepage" element={<HomepagePage />} />
-          <Route path="/content/hero" element={<HeroPage />} />
-          <Route path="/content/sections" element={<SectionsPage />} />
-          <Route path="/store/settings" element={<StoreSettingsPage />} />
-          <Route path="/store/shipping" element={<ShippingPage />} />
-          <Route path="/store/policies" element={<PoliciesPage />} />
-          <Route path="/store/social" element={<SocialPage />} />
           <Route path="/discounts" element={<DiscountListPage />} />
           <Route path="/discounts/new" element={<DiscountFormPage />} />
           <Route path="/discounts/:id" element={<DiscountFormPage />} />

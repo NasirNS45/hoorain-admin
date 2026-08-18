@@ -1,4 +1,4 @@
-export type MediaFolder = "catalog" | "cms";
+export type MediaFolder = "catalog";
 
 export type MediaAsset = {
   id: string;
@@ -442,93 +442,4 @@ export type DashboardResponse = {
   orders_by_status: OrderStatusCount[];
   recent_orders: RecentOrderRow[];
   low_stock_products: LowStockRow[];
-};
-
-export type HomepageSectionType =
-  | "HERO"
-  | "NEW_ARRIVALS"
-  | "OUR_EDIT"
-  | "SHOP_BY_CATEGORY"
-  | "HOORAIN_EDIT"
-  | "BRAND_STORY"
-  | "INSTAGRAM"
-  | "NEWSLETTER";
-
-export type SettingGroup =
-  | "BRAND"
-  | "CONTACT"
-  | "SOCIAL"
-  | "SHIPPING"
-  | "CHECKOUT"
-  | "POLICIES"
-  | "FOOTER"
-  | "WHATSAPP";
-
-export type Hero = {
-  id: string;
-  heading: string;
-  subtitle: string | null;
-  description: string | null;
-  desktop_image: string | null;
-  mobile_image: string | null;
-  primary_cta_text: string | null;
-  primary_cta_url: string | null;
-  secondary_cta_text: string | null;
-  secondary_cta_url: string | null;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-};
-
-export type HeroWrite = {
-  heading: string;
-  subtitle?: string | null;
-  description?: string | null;
-  desktop_image?: string | null;
-  mobile_image?: string | null;
-  primary_cta_text?: string | null;
-  primary_cta_url?: string | null;
-  secondary_cta_text?: string | null;
-  secondary_cta_url?: string | null;
-  is_active: boolean;
-};
-
-export type HomepageSection = {
-  id: string;
-  section_type: HomepageSectionType;
-  title: string | null;
-  subtitle: string | null;
-  description: string | null;
-  image: string | null;
-  mobile_image: string | null;
-  button_text: string | null;
-  button_url: string | null;
-  is_visible: boolean;
-  sort_order: number;
-  created_at: string;
-  updated_at: string;
-};
-
-export type SettingItem = {
-  id: string;
-  group: SettingGroup;
-  key: string;
-  value: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
-export type SettingGroupRead = {
-  group: SettingGroup;
-  items: SettingItem[];
-};
-
-export type ShippingCity = {
-  id: string;
-  name: string;
-  shipping_fee: string | null;
-  is_active: boolean;
-  sort_order: number;
-  created_at: string;
-  updated_at: string;
 };

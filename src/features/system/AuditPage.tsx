@@ -37,7 +37,7 @@ export function AuditPage() {
       <PageHeader
         eyebrow="System"
         title="Activity"
-        description="Writes to products, inventory, orders, settings, content, discounts, and admin users. Passwords are never stored here."
+        description="Writes to products, inventory, orders, discounts, and admin users. Passwords are never stored here."
       />
       <form
         className="grid gap-3 sm:grid-cols-5"

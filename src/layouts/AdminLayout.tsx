@@ -51,25 +51,8 @@ const NAV: (NavItem | NavGroup)[] = [
   { to: "/orders", label: "Orders" },
   { to: "/customers", label: "Customers" },
   {
-    label: "Content",
-    items: [
-      { to: "/content/homepage", label: "Homepage" },
-      { to: "/content/hero", label: "Hero" },
-      { to: "/content/sections", label: "Sections" },
-    ],
-  },
-  {
     label: "Marketing",
     items: [{ to: "/discounts", label: "Discounts" }],
-  },
-  {
-    label: "Store",
-    items: [
-      { to: "/store/settings", label: "Settings" },
-      { to: "/store/shipping", label: "Shipping" },
-      { to: "/store/policies", label: "Policies" },
-      { to: "/store/social", label: "Social Links" },
-    ],
   },
   {
     label: "System",

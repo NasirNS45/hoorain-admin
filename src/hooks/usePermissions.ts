@@ -14,10 +14,6 @@ export function usePermissions() {
     canUpdateOrders: can("orders.update"),
     canReadCustomers: can("customers.read"),
     canUpdateCustomers: can("customers.update"),
-    canReadContent: can("content.read"),
-    canUpdateContent: can("content.update"),
-    canReadSettings: can("settings.read"),
-    canUpdateSettings: can("settings.update"),
     canReadUsers: can("users.read"),
     canManageUsers: can("users.manage"),
   };
