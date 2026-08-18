@@ -128,7 +128,7 @@ export function CategoryFormPage() {
           label="Image URL"
           folder="catalog"
           disabled={!canWrite}
-          placeholder="/media/catalog/cat-unstitched.jpg"
+          placeholder="https://cdn.example.com/cat-unstitched.jpg"
           value={imageValue}
           onChange={(value) => form.setValue("image", value, { shouldDirty: true })}
         />

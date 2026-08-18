@@ -339,7 +339,7 @@ export function ProductFormPage() {
             folder="catalog"
             multiple
             disabled={!canWrite}
-            placeholder={"/media/catalog/product-1.jpg\n/media/catalog/detail-packaging.jpg"}
+            placeholder="https://cdn.example.com/product-1.jpg"
             hint="One URL per line, or upload files. The first image is the primary."
             value={imagesText}
             onChange={(value) => form.setValue("images_text", value, { shouldDirty: true })}
