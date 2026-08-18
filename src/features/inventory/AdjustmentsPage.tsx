@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { TableSkeleton } from "@/components/loading";
-import { EmptyState, FieldError, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, FieldError, PageHeader, PaginationBar, rowNumber } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -40,9 +40,17 @@ export function AdjustmentsPage() {
   const { canUpdate } = usePermissions();
   const [params] = useSearchParams();
   const productFilter = params.get("product_id") ?? "";
+  const [q, setQ] = useState("");
+  const [adjustmentType, setAdjustmentType] = useState<AdjustmentType | "">("");
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(Boolean(productFilter) && canUpdate);
-  const ledger = useAdjustments({ page, limit: 20, product_id: productFilter || undefined });
+  const ledger = useAdjustments({
+    q,
+    page,
+    limit: 20,
+    product_id: productFilter || undefined,
+    adjustment_type: adjustmentType || undefined,
+  });
   const stock = useStock({ page: 1, limit: 100 });
   const create = useCreateAdjustment();
   const form = useForm<FormValues>({
@@ -94,8 +102,31 @@ export function AdjustmentsPage() {
           ) : null
         }
       />
+      <form
+        className="flex flex-wrap gap-2"
+        onSubmit={(event) => {
+          event.preventDefault();
+          const form = new FormData(event.currentTarget);
+          setQ(String(form.get("q") ?? ""));
+          setAdjustmentType(String(form.get("adjustment_type") ?? "") as AdjustmentType | "");
+          setPage(1);
+        }}
+      >
+        <Input name="q" placeholder="Search piece or SKU" className="max-w-xs" defaultValue={q} />
+        <NativeSelect name="adjustment_type" className="w-44" defaultValue={adjustmentType}>
+          <option value="">All types</option>
+          <option value="RESTOCK">Restock</option>
+          <option value="SALE">Sale</option>
+          <option value="RETURN">Return</option>
+          <option value="DAMAGE">Damage</option>
+          <option value="MANUAL_ADJUSTMENT">Manual</option>
+        </NativeSelect>
+        <Button type="submit" variant="outline" pending={ledger.isFetching}>
+          {ledger.isFetching ? "Searching" : "Search"}
+        </Button>
+      </form>
       {ledger.isLoading ? (
-        <TableSkeleton columns={["When", "Piece", "Type", "Qty", "Reason"]} />
+        <TableSkeleton columns={["#", "When", "Piece", "Type", "Qty", "Reason"]} />
       ) : ledger.isError ? (
         <EmptyState title="Could not load the ledger" body="Inventory adjustments could not be fetched." />
       ) : !ledger.data?.data.length ? (
@@ -108,6 +139,7 @@ export function AdjustmentsPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">#</TableHead>
                 <TableHead>When</TableHead>
                 <TableHead>Piece</TableHead>
                 <TableHead>Type</TableHead>
@@ -116,8 +148,9 @@ export function AdjustmentsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {ledger.data.data.map((row) => (
+              {ledger.data.data.map((row, index) => (
                 <TableRow key={row.id}>
+                  <TableCell>{rowNumber(page, 20, index)}</TableCell>
                   <TableCell>{new Date(row.created_at).toLocaleString("en-PK")}</TableCell>
                   <TableCell>
                     {row.product_name}

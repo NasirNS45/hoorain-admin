@@ -3,10 +3,11 @@ import { Link } from "react-router";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { TableSkeleton } from "@/components/loading";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, PageHeader, PaginationBar, boolSelectValue, parseOptionalBool, rowNumber } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import {
   Table,
   TableBody,
@@ -22,9 +23,10 @@ import { ApiError } from "@/lib/api";
 export function CategoryListPage() {
   const { canCreate, canUpdate, canDelete } = usePermissions();
   const [q, setQ] = useState("");
+  const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
   const [page, setPage] = useState(1);
   const [pendingId, setPendingId] = useState<string | null>(null);
-  const categories = useCategories({ q, page, limit: 20 });
+  const categories = useCategories({ q, is_active: isActive, page, limit: 20 });
   const remove = useDeleteCategory();
 
   async function handleDelete() {
@@ -54,21 +56,27 @@ export function CategoryListPage() {
         }
       />
       <form
-        className="flex max-w-md gap-2"
+        className="flex flex-wrap gap-2"
         onSubmit={(event) => {
           event.preventDefault();
           const form = new FormData(event.currentTarget);
           setQ(String(form.get("q") ?? ""));
+          setIsActive(parseOptionalBool(form.get("is_active")));
           setPage(1);
         }}
       >
-        <Input name="q" placeholder="Search categories" defaultValue={q} />
+        <Input name="q" placeholder="Search categories" className="max-w-xs" defaultValue={q} />
+        <NativeSelect name="is_active" className="w-36" defaultValue={boolSelectValue(isActive)}>
+          <option value="">All statuses</option>
+          <option value="true">Active</option>
+          <option value="false">Hidden</option>
+        </NativeSelect>
         <Button type="submit" variant="outline" pending={categories.isFetching}>
           {categories.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
       {categories.isLoading ? (
-        <TableSkeleton columns={["Name", "Slug", "Status"]} />
+        <TableSkeleton columns={["#", "Name", "Slug", "Status"]} />
       ) : categories.isError ? (
         <EmptyState title="Could not load categories" body="Try again in a moment." />
       ) : !categories.data?.data.length ? (
@@ -82,6 +90,7 @@ export function CategoryListPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">#</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Slug</TableHead>
                 <TableHead>Status</TableHead>
@@ -89,8 +98,9 @@ export function CategoryListPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categories.data.data.map((category) => (
+              {categories.data.data.map((category, index) => (
                 <TableRow key={category.id}>
+                  <TableCell>{rowNumber(page, 20, index)}</TableCell>
                   <TableCell>{category.name}</TableCell>
                   <TableCell>{category.slug}</TableCell>
                   <TableCell>

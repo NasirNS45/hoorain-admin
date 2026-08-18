@@ -3,10 +3,11 @@ import { Link } from "react-router";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { TableSkeleton } from "@/components/loading";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, PageHeader, PaginationBar, boolSelectValue, parseOptionalBool, rowNumber } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import {
   Table,
   TableBody,
@@ -22,9 +23,10 @@ import { ApiError } from "@/lib/api";
 export function CollectionListPage() {
   const { canCreate, canUpdate, canDelete } = usePermissions();
   const [q, setQ] = useState("");
+  const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
   const [page, setPage] = useState(1);
   const [pendingId, setPendingId] = useState<string | null>(null);
-  const collections = useCollections({ q, page, limit: 20 });
+  const collections = useCollections({ q, is_active: isActive, page, limit: 20 });
   const remove = useDeleteCollection();
 
   async function handleDelete() {
@@ -54,21 +56,27 @@ export function CollectionListPage() {
         }
       />
       <form
-        className="flex max-w-md gap-2"
+        className="flex flex-wrap gap-2"
         onSubmit={(event) => {
           event.preventDefault();
           const form = new FormData(event.currentTarget);
           setQ(String(form.get("q") ?? ""));
+          setIsActive(parseOptionalBool(form.get("is_active")));
           setPage(1);
         }}
       >
-        <Input name="q" placeholder="Search collections" defaultValue={q} />
+        <Input name="q" placeholder="Search collections" className="max-w-xs" defaultValue={q} />
+        <NativeSelect name="is_active" className="w-36" defaultValue={boolSelectValue(isActive)}>
+          <option value="">All statuses</option>
+          <option value="true">Active</option>
+          <option value="false">Hidden</option>
+        </NativeSelect>
         <Button type="submit" variant="outline" pending={collections.isFetching}>
           {collections.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
       {collections.isLoading ? (
-        <TableSkeleton columns={["Name", "Slug", "Status"]} />
+        <TableSkeleton columns={["#", "Name", "Slug", "Status"]} />
       ) : collections.isError ? (
         <EmptyState title="Could not load collections" body="Try again in a moment." />
       ) : !collections.data?.data.length ? (
@@ -82,6 +90,7 @@ export function CollectionListPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">#</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Slug</TableHead>
                 <TableHead>Status</TableHead>
@@ -89,8 +98,9 @@ export function CollectionListPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {collections.data.data.map((collection) => (
+              {collections.data.data.map((collection, index) => (
                 <TableRow key={collection.id}>
+                  <TableCell>{rowNumber(page, 20, index)}</TableCell>
                   <TableCell>{collection.name}</TableCell>
                   <TableCell>{collection.slug}</TableCell>
                   <TableCell>

@@ -69,6 +69,22 @@ export function FieldError({ message }: { message?: string }) {
   return <p className="text-xs text-destructive">{message}</p>;
 }
 
+export function rowNumber(page: number, limit: number, index: number): number {
+  return (page - 1) * limit + index + 1;
+}
+
+export function parseOptionalBool(value: FormDataEntryValue | null): boolean | undefined {
+  const raw = String(value ?? "");
+  if (raw === "true") return true;
+  if (raw === "false") return false;
+  return undefined;
+}
+
+export function boolSelectValue(value: boolean | undefined): string {
+  if (value === undefined) return "";
+  return value ? "true" : "false";
+}
+
 export function PaginationBar({
   page,
   limit,

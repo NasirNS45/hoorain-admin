@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TableSkeleton } from "@/components/loading";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, PageHeader, PaginationBar, rowNumber } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
@@ -17,12 +17,14 @@ import { useAdminUsers, useAuditLogs } from "@/hooks/useUsers";
 
 export function AuditPage() {
   const { canReadUsers } = usePermissions();
+  const [q, setQ] = useState("");
   const [action, setAction] = useState("");
   const [entityType, setEntityType] = useState("");
   const [adminUserId, setAdminUserId] = useState("");
   const [page, setPage] = useState(1);
   const users = useAdminUsers({ page: 1, limit: 100 });
   const logs = useAuditLogs({
+    q,
     action,
     entity_type: entityType,
     admin_user_id: adminUserId,
@@ -38,16 +40,18 @@ export function AuditPage() {
         description="Writes to products, inventory, orders, settings, content, discounts, and admin users. Passwords are never stored here."
       />
       <form
-        className="grid gap-3 sm:grid-cols-4"
+        className="grid gap-3 sm:grid-cols-5"
         onSubmit={(event) => {
           event.preventDefault();
           const form = new FormData(event.currentTarget);
+          setQ(String(form.get("q") ?? "").trim());
           setAction(String(form.get("action") ?? "").trim());
           setEntityType(String(form.get("entity_type") ?? "").trim());
           setAdminUserId(String(form.get("admin_user_id") ?? ""));
           setPage(1);
         }}
       >
+        <Input name="q" placeholder="Search action or entity" defaultValue={q} />
         <Input name="action" placeholder="Action" defaultValue={action} />
         <Input name="entity_type" placeholder="Entity type" defaultValue={entityType} />
         <NativeSelect name="admin_user_id" defaultValue={adminUserId}>
@@ -63,7 +67,7 @@ export function AuditPage() {
         </Button>
       </form>
       {logs.isLoading ? (
-        <TableSkeleton columns={["When", "Who", "Action", "Entity"]} />
+        <TableSkeleton columns={["#", "When", "Who", "Action", "Entity"]} />
       ) : !canReadUsers || logs.isError ? (
         <EmptyState
           title="Could not load activity"
@@ -79,6 +83,7 @@ export function AuditPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">#</TableHead>
                 <TableHead>When</TableHead>
                 <TableHead>Who</TableHead>
                 <TableHead>Action</TableHead>
@@ -86,8 +91,9 @@ export function AuditPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {logs.data.data.map((row) => (
+              {logs.data.data.map((row, index) => (
                 <TableRow key={row.id}>
+                  <TableCell>{rowNumber(page, 20, index)}</TableCell>
                   <TableCell>{new Date(row.created_at).toLocaleString("en-PK")}</TableCell>
                   <TableCell>{row.actor_name ?? row.actor_email ?? "System"}</TableCell>
                   <TableCell>{row.action}</TableCell>

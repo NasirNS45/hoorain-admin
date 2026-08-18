@@ -128,6 +128,7 @@ export function CustomerDetailPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">#</TableHead>
               <TableHead>Order</TableHead>
               <TableHead>Total</TableHead>
               <TableHead>Status</TableHead>
@@ -136,8 +137,9 @@ export function CustomerDetailPage() {
           </TableHeader>
           <TableBody>
             {customer.orders.length ? (
-              customer.orders.map((order) => (
+              customer.orders.map((order, index) => (
                 <TableRow key={order.id}>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell>{order.order_number}</TableCell>
                   <TableCell>{formatPkr(order.total)}</TableCell>
                   <TableCell>
@@ -152,7 +154,7 @@ export function CustomerDetailPage() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="text-muted-foreground">
+                <TableCell colSpan={5} className="text-muted-foreground">
                   No orders for this customer yet.
                 </TableCell>
               </TableRow>

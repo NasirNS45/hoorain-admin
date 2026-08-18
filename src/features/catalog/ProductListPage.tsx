@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { TableSkeleton } from "@/components/loading";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, PageHeader, PaginationBar, rowNumber } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useDeleteProduct, useProducts } from "@/hooks/useCatalog";
+import { useBrands, useCategories, useDeleteProduct, useProducts } from "@/hooks/useCatalog";
 import { usePermissions } from "@/hooks/usePermissions";
 import { ApiError } from "@/lib/api";
 import { formatPkr } from "@/lib/utils";
@@ -33,13 +33,21 @@ export function ProductListPage() {
   const { canCreate, canUpdate, canDelete } = usePermissions();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<ProductStatus | "">("");
+  const [availability, setAvailability] = useState<Availability | "">("");
+  const [brandId, setBrandId] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [page, setPage] = useState(1);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const brands = useBrands({ page: 1, limit: 100 });
+  const categories = useCategories({ page: 1, limit: 100 });
   const products = useProducts({
     q,
     page,
     limit: 20,
     status: status || undefined,
+    availability: availability || undefined,
+    brand_id: brandId || undefined,
+    category_id: categoryId || undefined,
   });
   const remove = useDeleteProduct();
 
@@ -76,6 +84,9 @@ export function ProductListPage() {
           const form = new FormData(event.currentTarget);
           setQ(String(form.get("q") ?? ""));
           setStatus(String(form.get("status") ?? "") as ProductStatus | "");
+          setAvailability(String(form.get("availability") ?? "") as Availability | "");
+          setBrandId(String(form.get("brand_id") ?? ""));
+          setCategoryId(String(form.get("category_id") ?? ""));
           setPage(1);
         }}
       >
@@ -86,12 +97,35 @@ export function ProductListPage() {
           <option value="ACTIVE">Active</option>
           <option value="ARCHIVED">Archived</option>
         </NativeSelect>
+        <NativeSelect name="availability" className="w-40" defaultValue={availability}>
+          <option value="">All availability</option>
+          <option value="IN_STOCK">In stock</option>
+          <option value="LOW_STOCK">Low stock</option>
+          <option value="OUT_OF_STOCK">Sold out</option>
+          <option value="PRE_ORDER">Pre-order</option>
+        </NativeSelect>
+        <NativeSelect name="brand_id" className="w-44" defaultValue={brandId}>
+          <option value="">All brands</option>
+          {(brands.data?.data ?? []).map((brand) => (
+            <option key={brand.id} value={brand.id}>
+              {brand.name}
+            </option>
+          ))}
+        </NativeSelect>
+        <NativeSelect name="category_id" className="w-44" defaultValue={categoryId}>
+          <option value="">All categories</option>
+          {(categories.data?.data ?? []).map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </NativeSelect>
         <Button type="submit" variant="outline" pending={products.isFetching}>
           {products.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
       {products.isLoading ? (
-        <TableSkeleton columns={["Piece", "SKU", "Brand", "Price", "Stock", "Status"]} />
+        <TableSkeleton columns={["#", "Piece", "SKU", "Brand", "Price", "Stock", "Status"]} />
       ) : products.isError ? (
         <EmptyState title="Could not load products" body="The edit could not be fetched. Try again in a moment." />
       ) : !products.data?.data.length ? (
@@ -105,6 +139,7 @@ export function ProductListPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">#</TableHead>
                 <TableHead>Piece</TableHead>
                 <TableHead>SKU</TableHead>
                 <TableHead>Brand</TableHead>
@@ -115,8 +150,9 @@ export function ProductListPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.data.data.map((product) => (
+              {products.data.data.map((product, index) => (
                 <TableRow key={product.id}>
+                  <TableCell>{rowNumber(page, 20, index)}</TableCell>
                   <TableCell>
                     <div>
                       <p>{product.name}</p>

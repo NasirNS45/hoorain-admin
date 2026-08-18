@@ -173,6 +173,7 @@ export function OrderDetailPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">#</TableHead>
               <TableHead>Piece</TableHead>
               <TableHead>SKU</TableHead>
               <TableHead>Qty</TableHead>
@@ -180,8 +181,9 @@ export function OrderDetailPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {order.items.map((item) => (
+            {order.items.map((item, index) => (
               <TableRow key={item.id}>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>
                   {item.product_name_snapshot}
                   {item.size_snapshot ? ` · ${item.size_snapshot}` : ""}

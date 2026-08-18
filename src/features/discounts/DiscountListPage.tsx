@@ -3,10 +3,11 @@ import { Link } from "react-router";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { TableSkeleton } from "@/components/loading";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, PageHeader, PaginationBar, boolSelectValue, parseOptionalBool, rowNumber } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import {
   Table,
   TableBody,
@@ -48,9 +49,10 @@ function scopeLabel(discount: Discount) {
 export function DiscountListPage() {
   const { canCreate, canUpdate, canDelete } = usePermissions();
   const [q, setQ] = useState("");
+  const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
   const [page, setPage] = useState(1);
   const [pendingId, setPendingId] = useState<string | null>(null);
-  const discounts = useDiscounts({ q, page, limit: 20 });
+  const discounts = useDiscounts({ q, is_active: isActive, page, limit: 20 });
   const remove = useDeleteDiscount();
 
   async function handleDelete() {
@@ -80,21 +82,27 @@ export function DiscountListPage() {
         }
       />
       <form
-        className="flex max-w-md gap-2"
+        className="flex flex-wrap gap-2"
         onSubmit={(event) => {
           event.preventDefault();
           const form = new FormData(event.currentTarget);
           setQ(String(form.get("q") ?? ""));
+          setIsActive(parseOptionalBool(form.get("is_active")));
           setPage(1);
         }}
       >
-        <Input name="q" placeholder="Search campaigns" defaultValue={q} />
+        <Input name="q" placeholder="Search campaigns" className="max-w-xs" defaultValue={q} />
+        <NativeSelect name="is_active" className="w-36" defaultValue={boolSelectValue(isActive)}>
+          <option value="">All statuses</option>
+          <option value="true">Active</option>
+          <option value="false">Off</option>
+        </NativeSelect>
         <Button type="submit" variant="outline" pending={discounts.isFetching}>
           {discounts.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
       {discounts.isLoading ? (
-        <TableSkeleton columns={["Name", "Type", "Value", "Window", "Scope", "Status"]} />
+        <TableSkeleton columns={["#", "Name", "Type", "Value", "Window", "Scope", "Status"]} />
       ) : discounts.isError ? (
         <EmptyState
           title="Could not load discounts"
@@ -111,6 +119,7 @@ export function DiscountListPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">#</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Value</TableHead>
@@ -121,8 +130,9 @@ export function DiscountListPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {discounts.data.data.map((discount) => (
+              {discounts.data.data.map((discount, index) => (
                 <TableRow key={discount.id}>
+                  <TableCell>{rowNumber(page, 20, index)}</TableCell>
                   <TableCell>{discount.name}</TableCell>
                   <TableCell>
                     {discount.discount_type === "PERCENTAGE" ? "Percentage" : "Fixed amount"}

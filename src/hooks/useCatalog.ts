@@ -226,7 +226,7 @@ export function useDeleteProduct() {
   });
 }
 
-export function useStock(params: ListParams) {
+export function useStock(params: ListParams & { availability?: Availability }) {
   return useQuery({
     queryKey: ["inventory", "stock", params],
     queryFn: () => api.getPage<StockRow>(`/api/v1/inventory/stock${searchParams(params)}`),
@@ -234,7 +234,9 @@ export function useStock(params: ListParams) {
   });
 }
 
-export function useAdjustments(params: ListParams & { product_id?: string }) {
+export function useAdjustments(
+  params: ListParams & { product_id?: string; adjustment_type?: AdjustmentType },
+) {
   return useQuery({
     queryKey: ["inventory", "adjustments", params],
     queryFn: () =>

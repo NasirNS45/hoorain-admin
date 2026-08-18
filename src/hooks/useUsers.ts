@@ -1,14 +1,17 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import type { AdminAccount, AdminAccountWrite, AuditLog } from "@/types/api";
+import type { AdminAccount, AdminAccountWrite, AdminRole, AuditLog } from "@/types/api";
 
 type ListParams = {
   q?: string;
+  role?: AdminRole;
+  is_active?: boolean;
   page?: number;
   limit?: number;
 };
 
 type AuditParams = {
+  q?: string;
   action?: string;
   entity_type?: string;
   admin_user_id?: string;

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { TableSkeleton } from "@/components/loading";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, PageHeader, PaginationBar, rowNumber } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -115,7 +115,7 @@ export function OrderListPage() {
         </Button>
       </form>
       {orders.isLoading ? (
-        <TableSkeleton columns={["Order", "Customer", "Total", "Payment", "Status"]} />
+        <TableSkeleton columns={["#", "Order", "Customer", "Total", "Payment", "Status"]} />
       ) : orders.isError ? (
         <EmptyState title="Could not load orders" body="The order list could not be fetched." />
       ) : !orders.data?.data.length ? (
@@ -125,6 +125,7 @@ export function OrderListPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">#</TableHead>
                 <TableHead>Order</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Total</TableHead>
@@ -134,8 +135,9 @@ export function OrderListPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {orders.data.data.map((order) => (
+              {orders.data.data.map((order, index) => (
                 <TableRow key={order.id}>
+                  <TableCell>{rowNumber(page, 20, index)}</TableCell>
                   <TableCell>
                     <p>{order.order_number}</p>
                     <p className="text-xs text-muted-foreground">{order.fulfillment}</p>

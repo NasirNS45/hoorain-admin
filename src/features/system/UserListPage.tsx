@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { TableSkeleton } from "@/components/loading";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, PageHeader, PaginationBar, boolSelectValue, parseOptionalBool, rowNumber } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import {
   Table,
   TableBody,
@@ -27,8 +28,16 @@ const ROLE_LABEL: Record<AdminRole, string> = {
 export function UserListPage() {
   const { canReadUsers, canManageUsers } = usePermissions();
   const [q, setQ] = useState("");
+  const [role, setRole] = useState<AdminRole | "">("");
+  const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
   const [page, setPage] = useState(1);
-  const users = useAdminUsers({ q, page, limit: 20 });
+  const users = useAdminUsers({
+    q,
+    role: role || undefined,
+    is_active: isActive,
+    page,
+    limit: 20,
+  });
 
   return (
     <div className="space-y-6">
@@ -45,21 +54,35 @@ export function UserListPage() {
         }
       />
       <form
-        className="flex max-w-md gap-2"
+        className="flex flex-wrap gap-2"
         onSubmit={(event) => {
           event.preventDefault();
           const form = new FormData(event.currentTarget);
           setQ(String(form.get("q") ?? ""));
+          setRole(String(form.get("role") ?? "") as AdminRole | "");
+          setIsActive(parseOptionalBool(form.get("is_active")));
           setPage(1);
         }}
       >
-        <Input name="q" placeholder="Search name or email" defaultValue={q} />
+        <Input name="q" placeholder="Search name or email" className="max-w-xs" defaultValue={q} />
+        <NativeSelect name="role" className="w-40" defaultValue={role}>
+          <option value="">All roles</option>
+          <option value="SUPER_ADMIN">Super admin</option>
+          <option value="ADMIN">Admin</option>
+          <option value="MANAGER">Manager</option>
+          <option value="STAFF">Staff</option>
+        </NativeSelect>
+        <NativeSelect name="is_active" className="w-36" defaultValue={boolSelectValue(isActive)}>
+          <option value="">All statuses</option>
+          <option value="true">Active</option>
+          <option value="false">Inactive</option>
+        </NativeSelect>
         <Button type="submit" variant="outline" pending={users.isFetching}>
           {users.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
       {users.isLoading ? (
-        <TableSkeleton columns={["Name", "Email", "Role", "Status"]} />
+        <TableSkeleton columns={["#", "Name", "Email", "Role", "Status"]} />
       ) : !canReadUsers || users.isError ? (
         <EmptyState
           title="Could not load admin users"
@@ -76,6 +99,7 @@ export function UserListPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">#</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
@@ -84,8 +108,9 @@ export function UserListPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.data.data.map((user) => (
+              {users.data.data.map((user, index) => (
                 <TableRow key={user.id}>
+                  <TableCell>{rowNumber(page, 20, index)}</TableCell>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{ROLE_LABEL[user.role]}</TableCell>

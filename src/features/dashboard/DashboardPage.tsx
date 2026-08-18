@@ -210,11 +210,12 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <DashboardTableSkeleton columns={4} />
+              <DashboardTableSkeleton columns={5} />
             ) : data?.recent_orders.length ? (
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-12">#</TableHead>
                     <TableHead>Order</TableHead>
                     <TableHead>Customer</TableHead>
                     <TableHead>Total</TableHead>
@@ -222,8 +223,9 @@ export function DashboardPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data.recent_orders.map((order) => (
+                  {data.recent_orders.map((order, index) => (
                     <TableRow key={order.id}>
+                      <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         <Link className="underline-offset-2 hover:underline" to={`/orders/${order.id}`}>
                           {order.order_number}
@@ -251,19 +253,21 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <DashboardTableSkeleton columns={3} />
+              <DashboardTableSkeleton columns={4} />
             ) : data?.low_stock_products.length ? (
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-12">#</TableHead>
                     <TableHead>Piece</TableHead>
                     <TableHead>SKU</TableHead>
                     <TableHead>Stock</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data.low_stock_products.map((product) => (
+                  {data.low_stock_products.map((product, index) => (
                     <TableRow key={product.id}>
+                      <TableCell>{index + 1}</TableCell>
                       <TableCell>
                         <Link className="underline-offset-2 hover:underline" to={`/products/${product.id}`}>
                           {product.name}

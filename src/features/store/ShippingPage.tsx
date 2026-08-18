@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PanelSkeleton } from "@/components/loading";
-import { FieldError, PageHeader } from "@/components/PageHeader";
+import { FieldError, PageHeader, boolSelectValue, parseOptionalBool } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
 import {
   Table,
   TableBody,
@@ -59,6 +60,8 @@ export function ShippingPage() {
   const saveCity = useSaveShippingCity();
   const removeCity = useDeleteShippingCity();
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [cityQ, setCityQ] = useState("");
+  const [cityActive, setCityActive] = useState<boolean | undefined>(undefined);
   const rates = useForm<RatesValues>({
     resolver: zodResolver(ratesSchema),
     defaultValues: { flat_fee: "250.00", free_threshold: "5000.00" },
@@ -67,6 +70,16 @@ export function ShippingPage() {
     resolver: zodResolver(citySchema),
     defaultValues: { name: "", shipping_fee: "", is_active: true },
   });
+
+  const filteredCities = useMemo(() => {
+    const rows = cities.data ?? [];
+    const needle = cityQ.trim().toLowerCase();
+    return rows.filter((city) => {
+      if (needle && !city.name.toLowerCase().includes(needle)) return false;
+      if (cityActive !== undefined && city.is_active !== cityActive) return false;
+      return true;
+    });
+  }, [cities.data, cityQ, cityActive]);
 
   useEffect(() => {
     if (!groups.data) return;
@@ -173,9 +186,29 @@ export function ShippingPage() {
             Leave the fee blank to use the default. An override only applies below the free threshold.
           </p>
         </div>
+        <form
+          className="flex flex-wrap gap-2 border-t border-border px-6 py-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const form = new FormData(event.currentTarget);
+            setCityQ(String(form.get("q") ?? ""));
+            setCityActive(parseOptionalBool(form.get("is_active")));
+          }}
+        >
+          <Input name="q" placeholder="Search city" className="max-w-xs" defaultValue={cityQ} />
+          <NativeSelect name="is_active" className="w-36" defaultValue={boolSelectValue(cityActive)}>
+            <option value="">All statuses</option>
+            <option value="true">Active</option>
+            <option value="false">Off</option>
+          </NativeSelect>
+          <Button type="submit" variant="outline">
+            Search
+          </Button>
+        </form>
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">#</TableHead>
               <TableHead>City</TableHead>
               <TableHead>Fee</TableHead>
               <TableHead>Status</TableHead>
@@ -183,24 +216,36 @@ export function ShippingPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {(cities.data ?? []).map((city) => (
-              <TableRow key={city.id}>
-                <TableCell>{city.name}</TableCell>
-                <TableCell>{city.shipping_fee ? formatPkr(city.shipping_fee) : "Default"}</TableCell>
-                <TableCell>
-                  <Badge variant={city.is_active ? "secondary" : "outline"}>
-                    {city.is_active ? "Active" : "Off"}
-                  </Badge>
-                </TableCell>
-                {canUpdateSettings ? (
-                  <TableCell className="text-right">
-                    <Button variant="outline" size="sm" onClick={() => setPendingId(city.id)}>
-                      Remove
-                    </Button>
+            {filteredCities.length ? (
+              filteredCities.map((city, index) => (
+                <TableRow key={city.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{city.name}</TableCell>
+                  <TableCell>{city.shipping_fee ? formatPkr(city.shipping_fee) : "Default"}</TableCell>
+                  <TableCell>
+                    <Badge variant={city.is_active ? "secondary" : "outline"}>
+                      {city.is_active ? "Active" : "Off"}
+                    </Badge>
                   </TableCell>
-                ) : null}
+                  {canUpdateSettings ? (
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm" onClick={() => setPendingId(city.id)}>
+                        Remove
+                      </Button>
+                    </TableCell>
+                  ) : null}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={canUpdateSettings ? 5 : 4}
+                  className="text-muted-foreground"
+                >
+                  {(cities.data ?? []).length ? "No cities match." : "No cities yet."}
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
         {canUpdateSettings ? (

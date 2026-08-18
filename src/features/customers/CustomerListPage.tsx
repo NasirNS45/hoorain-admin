@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { TableSkeleton } from "@/components/loading";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, PageHeader, PaginationBar, rowNumber } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -42,7 +42,7 @@ export function CustomerListPage() {
         </Button>
       </form>
       {customers.isLoading ? (
-        <TableSkeleton columns={["Name", "Phone", "Orders", "Spent"]} />
+        <TableSkeleton columns={["#", "Name", "Phone", "Orders", "Spent"]} />
       ) : customers.isError ? (
         <EmptyState title="Could not load customers" body="Customer records could not be fetched." />
       ) : !customers.data?.data.length ? (
@@ -55,6 +55,7 @@ export function CustomerListPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">#</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Orders</TableHead>
@@ -63,8 +64,9 @@ export function CustomerListPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {customers.data.data.map((customer) => (
+              {customers.data.data.map((customer, index) => (
                 <TableRow key={customer.id}>
+                  <TableCell>{rowNumber(page, 20, index)}</TableCell>
                   <TableCell>{customer.name}</TableCell>
                   <TableCell>{customer.phone}</TableCell>
                   <TableCell>{customer.total_orders}</TableCell>

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { TableSkeleton } from "@/components/loading";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, PageHeader, PaginationBar, rowNumber } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import {
   Table,
   TableBody,
@@ -27,8 +28,14 @@ const AVAILABILITY_LABEL: Record<Availability, string> = {
 export function StockPage() {
   const { canCreate, canUpdate } = usePermissions();
   const [q, setQ] = useState("");
+  const [availability, setAvailability] = useState<Availability | "">("");
   const [page, setPage] = useState(1);
-  const stock = useStock({ q, page, limit: 20 });
+  const stock = useStock({
+    q,
+    availability: availability || undefined,
+    page,
+    limit: 20,
+  });
 
   return (
     <div className="space-y-6">
@@ -49,21 +56,29 @@ export function StockPage() {
         }
       />
       <form
-        className="flex max-w-md gap-2"
+        className="flex flex-wrap gap-2"
         onSubmit={(event) => {
           event.preventDefault();
           const form = new FormData(event.currentTarget);
           setQ(String(form.get("q") ?? ""));
+          setAvailability(String(form.get("availability") ?? "") as Availability | "");
           setPage(1);
         }}
       >
-        <Input name="q" placeholder="Search piece or SKU" defaultValue={q} />
+        <Input name="q" placeholder="Search piece or SKU" className="max-w-xs" defaultValue={q} />
+        <NativeSelect name="availability" className="w-40" defaultValue={availability}>
+          <option value="">All availability</option>
+          <option value="IN_STOCK">In stock</option>
+          <option value="LOW_STOCK">Low stock</option>
+          <option value="OUT_OF_STOCK">Sold out</option>
+          <option value="PRE_ORDER">Pre-order</option>
+        </NativeSelect>
         <Button type="submit" variant="outline" pending={stock.isFetching}>
           {stock.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
       {stock.isLoading ? (
-        <TableSkeleton columns={["Piece", "SKU", "Current", "Reserved", "Available", "Availability"]} />
+        <TableSkeleton columns={["#", "Piece", "SKU", "Current", "Reserved", "Available", "Availability"]} />
       ) : stock.isError ? (
         <EmptyState title="Could not load stock" body="Inventory figures could not be fetched." />
       ) : !stock.data?.data.length ? (
@@ -77,6 +92,7 @@ export function StockPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">#</TableHead>
                 <TableHead>Piece</TableHead>
                 <TableHead>SKU</TableHead>
                 <TableHead>Current</TableHead>
@@ -87,8 +103,9 @@ export function StockPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {stock.data.data.map((row) => (
+              {stock.data.data.map((row, index) => (
                 <TableRow key={row.id}>
+                  <TableCell>{rowNumber(page, 20, index)}</TableCell>
                   <TableCell>
                     <Link className="underline-offset-2 hover:underline" to={`/products/${row.id}`}>
                       {row.name}

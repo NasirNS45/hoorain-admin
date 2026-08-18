@@ -4,6 +4,7 @@ import type { Discount, DiscountWrite } from "@/types/api";
 
 type ListParams = {
   q?: string;
+  is_active?: boolean;
   page?: number;
   limit?: number;
 };
