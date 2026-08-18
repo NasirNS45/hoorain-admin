@@ -47,8 +47,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={pending || undefined}
         {...props}
       >
-        {pending && !asChild ? <FrameSpinner /> : null}
-        {children}
+        {asChild ? (
+          children
+        ) : (
+          <>
+            {pending ? <FrameSpinner /> : null}
+            {children}
+          </>
+        )}
       </Comp>
     );
   },
