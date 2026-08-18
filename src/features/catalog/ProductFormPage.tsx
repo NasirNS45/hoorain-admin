@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { ImageUploadField } from "@/components/ImageUploadField";
-import { FieldError, PageHeader } from "@/components/PageHeader";
+import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,8 +33,8 @@ const schema = z.object({
   price: z.string().trim().min(1, "Price is required."),
   original_price: z.string(),
   cost_price: z.string(),
-  stock_quantity: z.number().int().min(0),
-  low_stock_threshold: z.number().int().min(0),
+  stock_quantity: z.number({ error: "Enter a number." }).int("Enter a whole number.").min(0, "Stock cannot be negative."),
+  low_stock_threshold: z.number({ error: "Enter a number." }).int("Enter a whole number.").min(0, "Threshold cannot be negative."),
   status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]),
   fabric: z.string(),
   care_instructions: z.string(),
@@ -47,7 +47,7 @@ const schema = z.object({
   is_new: z.boolean(),
   is_sale: z.boolean(),
   is_just_in: z.boolean(),
-  sort_order: z.number().int(),
+  sort_order: z.number({ error: "Enter a number." }).int("Enter a whole number."),
   seo_title: z.string(),
   seo_description: z.string(),
   images_text: z.string(),
@@ -200,7 +200,7 @@ export function ProductFormPage() {
   }
 
   if (!isNew && existing.isLoading) {
-    return <p className="text-sm text-muted-foreground">Loading piece</p>;
+    return <LoadingState title="Loading piece" body="Fetching this product." />;
   }
 
   if (!isNew && existing.isError) {
@@ -214,7 +214,7 @@ export function ProductFormPage() {
         title={isNew ? "Add product" : "Edit product"}
         description="Prices are PKR. Discount is always current price against original price. Brands are catalogue labels only."
       />
-      <form className="space-y-8 border border-border bg-card p-6" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-8 border border-border bg-card p-6" noValidate onSubmit={form.handleSubmit(onSubmit)}>
         <section className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="name">Name</Label>
@@ -266,6 +266,7 @@ export function ProductFormPage() {
           <div className="space-y-2">
             <Label htmlFor="sort_order">Sort order</Label>
             <Input id="sort_order" type="number" disabled={!canWrite} {...form.register("sort_order", { valueAsNumber: true })} />
+            <FieldError message={form.formState.errors.sort_order?.message} />
           </div>
         </section>
 
@@ -398,6 +399,7 @@ export function ProductFormPage() {
               disabled={!canWrite || !isNew}
               {...form.register("stock_quantity", { valueAsNumber: true })}
             />
+            <FieldError message={form.formState.errors.stock_quantity?.message} />
             {isNew ? (
               <p className="text-xs text-muted-foreground">Initial quantity writes a RESTOCK row. Later changes go through inventory adjustments.</p>
             ) : (
@@ -412,6 +414,7 @@ export function ProductFormPage() {
           <div className="space-y-2">
             <Label htmlFor="low_stock_threshold">Low stock threshold</Label>
             <Input id="low_stock_threshold" type="number" disabled={!canWrite} {...form.register("low_stock_threshold", { valueAsNumber: true })} />
+            <FieldError message={form.formState.errors.low_stock_threshold?.message} />
           </div>
         </section>
 

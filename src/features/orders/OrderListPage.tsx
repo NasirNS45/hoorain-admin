@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, LoadingState, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -109,11 +109,13 @@ export function OrderListPage() {
         }}
       >
         <Input name="q" placeholder="Search order, name, or phone" defaultValue={q} />
-        <Button type="submit" variant="outline">
-          Search
+        <Button type="submit" variant="outline" disabled={orders.isFetching}>
+          {orders.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
-      {orders.isError ? (
+      {orders.isLoading ? (
+        <LoadingState title="Loading orders" body="Fetching prepaid orders." />
+      ) : orders.isError ? (
         <EmptyState title="Could not load orders" body="The order list could not be fetched." />
       ) : !orders.data?.data.length ? (
         <EmptyState title="No orders" body={copy.empty} />

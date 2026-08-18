@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { FieldError, PageHeader } from "@/components/PageHeader";
+import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,7 +36,14 @@ const ratesSchema = z.object({
 
 const citySchema = z.object({
   name: z.string().trim().min(1, "City name is required."),
-  shipping_fee: z.string(),
+  shipping_fee: z.string().refine(
+    (value) => {
+      const trimmed = value.trim();
+      if (!trimmed) return true;
+      return Number.isFinite(Number(trimmed));
+    },
+    { message: "Enter a fee in PKR." },
+  ),
   is_active: z.boolean(),
 });
 
@@ -114,6 +121,19 @@ export function ShippingPage() {
     }
   }
 
+  if (groups.isLoading || cities.isLoading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow="Store"
+          title="Shipping"
+          description="Default fee, free-delivery threshold, and optional city overrides. Pickup stays free."
+        />
+        <LoadingState title="Loading shipping" body="Fetching rates and city overrides." />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -123,6 +143,7 @@ export function ShippingPage() {
       />
       <form
         className="max-w-2xl space-y-5 border border-border bg-card p-6"
+        noValidate
         onSubmit={rates.handleSubmit(onSaveRates)}
       >
         <div className="grid gap-4 sm:grid-cols-2">
@@ -182,14 +203,17 @@ export function ShippingPage() {
           </TableBody>
         </Table>
         {canUpdateSettings ? (
-          <form className="grid gap-3 border-t border-border p-6 sm:grid-cols-[1fr_140px_auto]" onSubmit={cityForm.handleSubmit(onAddCity)}>
+          <form className="grid gap-3 border-t border-border p-6 sm:grid-cols-[1fr_140px_auto]" noValidate onSubmit={cityForm.handleSubmit(onAddCity)}>
             <div>
               <Input placeholder="City name" {...cityForm.register("name")} />
               <FieldError message={cityForm.formState.errors.name?.message} />
             </div>
-            <Input placeholder="Fee or blank" {...cityForm.register("shipping_fee")} />
+            <div>
+              <Input placeholder="Fee or blank" {...cityForm.register("shipping_fee")} />
+              <FieldError message={cityForm.formState.errors.shipping_fee?.message} />
+            </div>
             <Button type="submit" disabled={saveCity.isPending}>
-              Add city
+              {saveCity.isPending ? "Adding" : "Add city"}
             </Button>
           </form>
         ) : null}

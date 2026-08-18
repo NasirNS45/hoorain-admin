@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { ImageUploadField } from "@/components/ImageUploadField";
-import { FieldError, PageHeader } from "@/components/PageHeader";
+import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,7 +22,7 @@ const schema = z.object({
   banner_image: z.string(),
   is_active: z.boolean(),
   is_featured: z.boolean(),
-  sort_order: z.number().int(),
+  sort_order: z.number({ error: "Enter a number." }).int("Enter a whole number."),
   seo_title: z.string(),
   seo_description: z.string(),
 });
@@ -96,6 +96,10 @@ export function CollectionFormPage() {
     }
   }
 
+  if (!isNew && existing.isLoading) {
+    return <LoadingState title="Loading collection" body="Fetching this collection." />;
+  }
+
   if (!isNew && existing.isError) {
     return (
       <PageHeader eyebrow="Catalog" title="Collection not found" description="This collection is not in the edit." />
@@ -109,7 +113,7 @@ export function CollectionFormPage() {
         title={isNew ? "Add collection" : "Edit collection"}
         description="Collections group pieces for the storefront, including The HOORAIN Edit."
       />
-      <form className="space-y-5 border border-border bg-card p-6" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-5 border border-border bg-card p-6" noValidate onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
           <Input id="name" disabled={!canWrite} {...form.register("name")} />
@@ -154,6 +158,7 @@ export function CollectionFormPage() {
         <div className="space-y-2">
           <Label htmlFor="sort_order">Sort order</Label>
           <Input id="sort_order" type="number" disabled={!canWrite} {...form.register("sort_order", { valueAsNumber: true })} />
+          <FieldError message={form.formState.errors.sort_order?.message} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="seo_title">SEO title</Label>

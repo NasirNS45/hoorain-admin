@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, LoadingState, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,11 +53,13 @@ export function UserListPage() {
         }}
       >
         <Input name="q" placeholder="Search name or email" defaultValue={q} />
-        <Button type="submit" variant="outline">
-          Search
+        <Button type="submit" variant="outline" disabled={users.isFetching}>
+          {users.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
-      {!canReadUsers || users.isError ? (
+      {users.isLoading ? (
+        <LoadingState title="Loading admin users" body="Fetching editor accounts." />
+      ) : !canReadUsers || users.isError ? (
         <EmptyState
           title="Could not load admin users"
           body="You need users.read to view this list."

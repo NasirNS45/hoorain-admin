@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { FieldError, PageHeader } from "@/components/PageHeader";
+import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,12 +11,35 @@ import { settingValue, usePatchSettings, useSettingGroups } from "@/hooks/useCon
 import { usePermissions } from "@/hooks/usePermissions";
 import { ApiError } from "@/lib/api";
 
+const optionalUrl = z.string().refine(
+  (value) => {
+    const trimmed = value.trim();
+    if (!trimmed) return true;
+    try {
+      new URL(trimmed);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  { message: "Enter a valid URL." },
+);
+
+const optionalEmail = z.string().refine(
+  (value) => {
+    const trimmed = value.trim();
+    if (!trimmed) return true;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+  },
+  { message: "Enter a valid email." },
+);
+
 const schema = z.object({
   name: z.string().trim().min(1, "Brand name is required."),
   tagline: z.string(),
-  url: z.string(),
+  url: optionalUrl,
   city: z.string(),
-  email: z.string(),
+  email: optionalEmail,
   phone: z.string(),
   whatsapp: z.string(),
   footer: z.string(),
@@ -89,6 +112,19 @@ export function StoreSettingsPage() {
     }
   }
 
+  if (groups.isLoading) {
+    return (
+      <div className="max-w-2xl space-y-6">
+        <PageHeader
+          eyebrow="Store"
+          title="Settings"
+          description="Brand name, contact, WhatsApp number, and footer copy used on the storefront."
+        />
+        <LoadingState title="Loading settings" body="Fetching store settings." />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl space-y-6">
       <PageHeader
@@ -96,7 +132,7 @@ export function StoreSettingsPage() {
         title="Settings"
         description="Brand name, contact, WhatsApp number, and footer copy used on the storefront."
       />
-      <form className="space-y-5 border border-border bg-card p-6" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-5 border border-border bg-card p-6" noValidate onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-2">
           <Label htmlFor="name">Brand name</Label>
           <Input id="name" disabled={!canUpdateSettings} {...form.register("name")} />
@@ -109,6 +145,7 @@ export function StoreSettingsPage() {
         <div className="space-y-2">
           <Label htmlFor="url">Store URL</Label>
           <Input id="url" disabled={!canUpdateSettings} {...form.register("url")} />
+          <FieldError message={form.formState.errors.url?.message} />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -121,7 +158,8 @@ export function StoreSettingsPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" disabled={!canUpdateSettings} {...form.register("email")} />
+            <Input id="email" type="text" autoComplete="email" disabled={!canUpdateSettings} {...form.register("email")} />
+            <FieldError message={form.formState.errors.email?.message} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="whatsapp">WhatsApp number</Label>

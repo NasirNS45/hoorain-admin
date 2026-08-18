@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { PageHeader } from "@/components/PageHeader";
+import { LoadingState, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -57,6 +57,19 @@ export function PoliciesPage() {
     }
   }
 
+  if (groups.isLoading) {
+    return (
+      <div className="max-w-2xl space-y-6">
+        <PageHeader
+          eyebrow="Store"
+          title="Policies"
+          description="Shipping, returns, privacy, and terms used on product accordions and help pages."
+        />
+        <LoadingState title="Loading policies" body="Fetching shipping, returns, privacy, and terms." />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl space-y-6">
       <PageHeader
@@ -64,7 +77,7 @@ export function PoliciesPage() {
         title="Policies"
         description="Shipping, returns, privacy, and terms used on product accordions and help pages."
       />
-      <form className="space-y-5 border border-border bg-card p-6" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-5 border border-border bg-card p-6" noValidate onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-2">
           <Label htmlFor="shipping">Shipping</Label>
           <Textarea id="shipping" rows={5} disabled={!canUpdateSettings} {...form.register("shipping")} />

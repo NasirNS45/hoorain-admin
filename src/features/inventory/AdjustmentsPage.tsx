@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { EmptyState, FieldError, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, FieldError, LoadingState, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -28,7 +28,7 @@ import type { AdjustmentType } from "@/types/api";
 const schema = z.object({
   product_id: z.string().min(1, "Choose a piece."),
   adjustment_type: z.enum(["RESTOCK", "SALE", "RETURN", "DAMAGE", "MANUAL_ADJUSTMENT"]),
-  quantity: z.number().int(),
+  quantity: z.number({ error: "Enter a number." }).int("Enter a whole number."),
   reason: z.string(),
   note: z.string(),
 });
@@ -93,7 +93,9 @@ export function AdjustmentsPage() {
           ) : null
         }
       />
-      {ledger.isError ? (
+      {ledger.isLoading ? (
+        <LoadingState title="Loading adjustments" body="Fetching the inventory ledger." />
+      ) : ledger.isError ? (
         <EmptyState title="Could not load the ledger" body="Inventory adjustments could not be fetched." />
       ) : !ledger.data?.data.length ? (
         <EmptyState
@@ -139,7 +141,7 @@ export function AdjustmentsPage() {
           <DialogDescription className="text-sm text-muted-foreground">
             This writes a ledger row and updates availability. Product forms cannot change stock after create.
           </DialogDescription>
-          <form className="mt-4 space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+          <form className="mt-4 space-y-4" noValidate onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-y-2">
               <Label htmlFor="product_id">Piece</Label>
               <NativeSelect id="product_id" {...form.register("product_id")}>
@@ -162,6 +164,7 @@ export function AdjustmentsPage() {
                   <option value="DAMAGE">Damage</option>
                   <option value="MANUAL_ADJUSTMENT">Manual</option>
                 </NativeSelect>
+                <FieldError message={form.formState.errors.adjustment_type?.message} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="quantity">Quantity</Label>
@@ -172,13 +175,15 @@ export function AdjustmentsPage() {
             <div className="space-y-2">
               <Label htmlFor="reason">Reason</Label>
               <Input id="reason" {...form.register("reason")} />
+              <FieldError message={form.formState.errors.reason?.message} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="note">Note</Label>
               <Textarea id="note" {...form.register("note")} />
+              <FieldError message={form.formState.errors.note?.message} />
             </div>
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              <Button type="button" variant="outline" disabled={create.isPending} onClick={() => setOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" disabled={create.isPending}>

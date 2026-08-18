@@ -47,6 +47,21 @@ export function EmptyState({
   );
 }
 
+export function LoadingState({
+  title,
+  body,
+}: {
+  title: string;
+  body: string;
+}) {
+  return (
+    <div className="border border-border bg-card p-8">
+      <h2 className="font-display text-2xl">{title}</h2>
+      <p className="mt-2 max-w-xl text-sm text-muted-foreground">{body}</p>
+    </div>
+  );
+}
+
 export function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return <p className="text-xs text-destructive">{message}</p>;

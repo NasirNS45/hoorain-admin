@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { ImageUploadField } from "@/components/ImageUploadField";
-import { FieldError, PageHeader } from "@/components/PageHeader";
+import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -91,6 +91,19 @@ export function HeroPage() {
     }
   }
 
+  if (heroes.isLoading) {
+    return (
+      <div className="max-w-2xl space-y-6">
+        <PageHeader
+          eyebrow="Content"
+          title="Hero"
+          description="Heading, images, and both CTAs. Activating this hero turns the others off."
+        />
+        <LoadingState title="Loading hero" body="Fetching the homepage hero." />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl space-y-6">
       <PageHeader
@@ -98,7 +111,7 @@ export function HeroPage() {
         title="Hero"
         description="Heading, images, and both CTAs. Activating this hero turns the others off."
       />
-      <form className="space-y-5 border border-border bg-card p-6" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-5 border border-border bg-card p-6" noValidate onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-2">
           <Label htmlFor="heading">Heading</Label>
           <Textarea id="heading" disabled={!canUpdateContent} {...form.register("heading")} />

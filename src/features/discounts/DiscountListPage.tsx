@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, LoadingState, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -88,11 +88,13 @@ export function DiscountListPage() {
         }}
       >
         <Input name="q" placeholder="Search campaigns" defaultValue={q} />
-        <Button type="submit" variant="outline">
-          Search
+        <Button type="submit" variant="outline" disabled={discounts.isFetching}>
+          {discounts.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
-      {discounts.isError ? (
+      {discounts.isLoading ? (
+        <LoadingState title="Loading discounts" body="Fetching sale campaigns." />
+      ) : discounts.isError ? (
         <EmptyState
           title="Could not load discounts"
           body="Sale campaigns could not be fetched. Try again in a moment."

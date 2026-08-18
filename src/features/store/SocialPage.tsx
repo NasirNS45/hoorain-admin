@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { PageHeader } from "@/components/PageHeader";
+import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,11 +11,25 @@ import { settingValue, usePatchSettings, useSettingGroups } from "@/hooks/useCon
 import { usePermissions } from "@/hooks/usePermissions";
 import { ApiError } from "@/lib/api";
 
+const optionalUrl = z.string().refine(
+  (value) => {
+    const trimmed = value.trim();
+    if (!trimmed) return true;
+    try {
+      new URL(trimmed);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  { message: "Enter a valid URL." },
+);
+
 const schema = z.object({
-  instagram_url: z.string(),
+  instagram_url: optionalUrl,
   instagram_handle: z.string(),
-  facebook_url: z.string(),
-  tiktok_url: z.string(),
+  facebook_url: optionalUrl,
+  tiktok_url: optionalUrl,
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -62,6 +76,19 @@ export function SocialPage() {
     }
   }
 
+  if (groups.isLoading) {
+    return (
+      <div className="max-w-2xl space-y-6">
+        <PageHeader
+          eyebrow="Store"
+          title="Social Links"
+          description="Instagram, Facebook, and TikTok URLs for the footer and follow section."
+        />
+        <LoadingState title="Loading social links" body="Fetching Instagram, Facebook, and TikTok URLs." />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl space-y-6">
       <PageHeader
@@ -69,10 +96,11 @@ export function SocialPage() {
         title="Social Links"
         description="Instagram, Facebook, and TikTok URLs for the footer and follow section."
       />
-      <form className="space-y-5 border border-border bg-card p-6" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-5 border border-border bg-card p-6" noValidate onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-2">
           <Label htmlFor="instagram_url">Instagram URL</Label>
           <Input id="instagram_url" disabled={!canUpdateSettings} {...form.register("instagram_url")} />
+          <FieldError message={form.formState.errors.instagram_url?.message} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="instagram_handle">Instagram handle</Label>
@@ -81,10 +109,12 @@ export function SocialPage() {
         <div className="space-y-2">
           <Label htmlFor="facebook_url">Facebook URL</Label>
           <Input id="facebook_url" disabled={!canUpdateSettings} {...form.register("facebook_url")} />
+          <FieldError message={form.formState.errors.facebook_url?.message} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="tiktok_url">TikTok URL</Label>
           <Input id="tiktok_url" disabled={!canUpdateSettings} {...form.register("tiktok_url")} />
+          <FieldError message={form.formState.errors.tiktok_url?.message} />
         </div>
         {canUpdateSettings ? (
           <Button type="submit" disabled={patch.isPending}>

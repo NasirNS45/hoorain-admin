@@ -8,6 +8,7 @@ import {
   Search,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { BrandMark } from "@/components/BrandMark";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
+import { ApiError } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 type NavItem = { to: string; label: string };
@@ -229,14 +231,21 @@ export function AdminLayout({ children }: { children: ReactNode }) {
               <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
+                disabled={logout.isPending}
                 onClick={() => {
                   logout.mutate(undefined, {
+                    onSuccess: () => toast.success("Signed out."),
+                    onError: (error) => {
+                      const message =
+                        error instanceof ApiError ? error.message : "Could not sign out.";
+                      toast.error(message);
+                    },
                     onSettled: () => navigate("/login", { replace: true }),
                   });
                 }}
               >
                 <LogOut className="h-4 w-4" />
-                Logout
+                {logout.isPending ? "Signing out" : "Logout"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

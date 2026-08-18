@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { FieldError, PageHeader } from "@/components/PageHeader";
+import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -126,6 +126,10 @@ export function DiscountFormPage() {
     }
   }
 
+  if (!isNew && existing.isLoading) {
+    return <LoadingState title="Loading campaign" body="Fetching this sale campaign." />;
+  }
+
   if (!isNew && existing.isError) {
     return (
       <PageHeader
@@ -143,7 +147,7 @@ export function DiscountFormPage() {
         title={isNew ? "Add campaign" : "Edit campaign"}
         description="Leave products and collections empty for a store-wide sale. If several campaigns match, the lowest selling price wins."
       />
-      <form className="space-y-5 border border-border bg-card p-6" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-5 border border-border bg-card p-6" noValidate onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
           <Input id="name" disabled={!canWrite} {...form.register("name")} />

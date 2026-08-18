@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, LoadingState, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,11 +57,13 @@ export function StockPage() {
         }}
       >
         <Input name="q" placeholder="Search piece or SKU" defaultValue={q} />
-        <Button type="submit" variant="outline">
-          Search
+        <Button type="submit" variant="outline" disabled={stock.isFetching}>
+          {stock.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
-      {stock.isError ? (
+      {stock.isLoading ? (
+        <LoadingState title="Loading stock" body="Fetching inventory figures." />
+      ) : stock.isError ? (
         <EmptyState title="Could not load stock" body="Inventory figures could not be fetched." />
       ) : !stock.data?.data.length ? (
         <EmptyState

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, LoadingState, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -36,11 +36,13 @@ export function CustomerListPage() {
         }}
       >
         <Input name="q" placeholder="Search name or phone" defaultValue={q} />
-        <Button type="submit" variant="outline">
-          Search
+        <Button type="submit" variant="outline" disabled={customers.isFetching}>
+          {customers.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
-      {customers.isError ? (
+      {customers.isLoading ? (
+        <LoadingState title="Loading customers" body="Fetching phone-first customer records." />
+      ) : customers.isError ? (
         <EmptyState title="Could not load customers" body="Customer records could not be fetched." />
       ) : !customers.data?.data.length ? (
         <EmptyState

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { EmptyState, LoadingState, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,11 +62,13 @@ export function CollectionListPage() {
         }}
       >
         <Input name="q" placeholder="Search collections" defaultValue={q} />
-        <Button type="submit" variant="outline">
-          Search
+        <Button type="submit" variant="outline" disabled={collections.isFetching}>
+          {collections.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
-      {collections.isError ? (
+      {collections.isLoading ? (
+        <LoadingState title="Loading collections" body="Fetching the collection list." />
+      ) : collections.isError ? (
         <EmptyState title="Could not load collections" body="Try again in a moment." />
       ) : !collections.data?.data.length ? (
         <EmptyState

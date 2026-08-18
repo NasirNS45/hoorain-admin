@@ -3,6 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { BrandMark } from "@/components/BrandMark";
+import { FieldError } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +33,7 @@ export function LoginPage() {
   async function onSubmit(values: FormValues) {
     try {
       await login.mutateAsync(values);
+      toast.success("Signed in.");
     } catch (error) {
       const message = error instanceof ApiError ? error.message : "Could not sign in.";
       toast.error(message);
@@ -47,13 +49,11 @@ export function LoginPage() {
         <p className="mt-2 text-sm text-muted-foreground">
           Sign in to manage the edit, orders, and WhatsApp confirmations.
         </p>
-        <form className="mt-8 space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
+        <form className="mt-8 space-y-5" noValidate onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" autoComplete="email" {...form.register("email")} />
-            {form.formState.errors.email ? (
-              <p className="text-xs text-destructive">{form.formState.errors.email.message}</p>
-            ) : null}
+            <Input id="email" type="text" autoComplete="email" {...form.register("email")} />
+            <FieldError message={form.formState.errors.email?.message} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
@@ -63,9 +63,7 @@ export function LoginPage() {
               autoComplete="current-password"
               {...form.register("password")}
             />
-            {form.formState.errors.password ? (
-              <p className="text-xs text-destructive">{form.formState.errors.password.message}</p>
-            ) : null}
+            <FieldError message={form.formState.errors.password?.message} />
           </div>
           <Button type="submit" className="w-full eyebrow h-11" disabled={login.isPending}>
             {login.isPending ? "Signing in" : "Sign in"}

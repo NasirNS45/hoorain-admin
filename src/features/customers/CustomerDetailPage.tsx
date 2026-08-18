@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Link, useParams } from "react-router";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { EmptyState, PageHeader } from "@/components/PageHeader";
+import { EmptyState, FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,15 +21,34 @@ import { ApiError } from "@/lib/api";
 import { formatPkr } from "@/lib/utils";
 import type { CustomerAdmin } from "@/types/api";
 
+const schema = z.object({
+  name: z.string().trim().min(1, "Name is required."),
+  email: z.string().refine(
+    (value) => {
+      const trimmed = value.trim();
+      if (!trimmed) return true;
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+    },
+    { message: "Enter a valid email." },
+  ),
+});
+
+type FormValues = z.infer<typeof schema>;
+
 function CustomerEditForm({ customer }: { customer: CustomerAdmin }) {
   const { canUpdateCustomers } = usePermissions();
   const update = useUpdateCustomer();
-  const [name, setName] = useState(customer.name);
-  const [email, setEmail] = useState(customer.email ?? "");
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: customer.name,
+      email: customer.email ?? "",
+    },
+  });
 
-  async function handleSave() {
+  async function onSubmit(values: FormValues) {
     try {
-      await update.mutateAsync({ id: customer.id, name, email });
+      await update.mutateAsync({ id: customer.id, name: values.name, email: values.email.trim() || "" });
       toast.success("Customer updated.");
     } catch (error) {
       const message = error instanceof ApiError ? error.message : "Could not update this customer.";
@@ -38,34 +59,30 @@ function CustomerEditForm({ customer }: { customer: CustomerAdmin }) {
   return (
     <form
       className="space-y-3 border border-border bg-card p-5"
-      onSubmit={(event) => {
-        event.preventDefault();
-        void handleSave();
-      }}
+      noValidate
+      onSubmit={form.handleSubmit(onSubmit)}
     >
       <h2 className="font-display text-2xl">Details</h2>
       <label className="block text-sm">
         Name
-        <Input
-          className="mt-1"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          disabled={!canUpdateCustomers}
-        />
+        <Input className="mt-1" disabled={!canUpdateCustomers} {...form.register("name")} />
+        <FieldError message={form.formState.errors.name?.message} />
       </label>
       <label className="block text-sm">
         Email
         <Input
           className="mt-1"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          type="text"
+          autoComplete="email"
           disabled={!canUpdateCustomers}
+          {...form.register("email")}
         />
+        <FieldError message={form.formState.errors.email?.message} />
       </label>
       <p className="text-sm text-muted-foreground">Phone is identity and stays {customer.phone}.</p>
       {canUpdateCustomers ? (
         <Button type="submit" disabled={update.isPending}>
-          Save
+          {update.isPending ? "Saving" : "Save"}
         </Button>
       ) : null}
     </form>
@@ -80,8 +97,8 @@ export function CustomerDetailPage() {
   if (customerQuery.isError) {
     return <EmptyState title="Customer not found" body="This customer could not be loaded." />;
   }
-  if (!customer) {
-    return <EmptyState title="Loading customer" body="Fetching the phone-first customer record." />;
+  if (customerQuery.isLoading || !customer) {
+    return <LoadingState title="Loading customer" body="Fetching the phone-first customer record." />;
   }
 
   return (

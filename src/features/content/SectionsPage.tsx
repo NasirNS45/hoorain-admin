@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { ImageUploadField } from "@/components/ImageUploadField";
-import { FieldError, PageHeader } from "@/components/PageHeader";
+import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,6 +90,7 @@ export function SectionsPage() {
     swapped[next] = current;
     try {
       await reorder.mutateAsync(swapped);
+      toast.success("Section order saved.");
     } catch (error) {
       const message = error instanceof ApiError ? error.message : "Could not reorder sections.";
       toast.error(message);
@@ -117,6 +118,19 @@ export function SectionsPage() {
       const message = error instanceof ApiError ? error.message : "Could not save this section.";
       toast.error(message);
     }
+  }
+
+  if (sections.isLoading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow="Content"
+          title="Sections"
+          description="Show, hide, and reorder the eight homepage blocks. Product grids still come from the catalogue."
+        />
+        <LoadingState title="Loading sections" body="Fetching homepage sections." />
+      </div>
+    );
   }
 
   return (
@@ -150,7 +164,7 @@ export function SectionsPage() {
                     disabled={index === 0 || reorder.isPending}
                     onClick={() => void move(section, -1)}
                   >
-                    Up
+                    {reorder.isPending ? "Moving" : "Up"}
                   </Button>
                   <Button
                     variant="outline"
@@ -158,7 +172,7 @@ export function SectionsPage() {
                     disabled={index === rows.length - 1 || reorder.isPending}
                     onClick={() => void move(section, 1)}
                   >
-                    Down
+                    {reorder.isPending ? "Moving" : "Down"}
                   </Button>
                 </div>
               ) : null}
@@ -166,7 +180,7 @@ export function SectionsPage() {
           ))}
         </ul>
         {selected ? (
-          <form className="space-y-5 border border-border bg-card p-6" onSubmit={form.handleSubmit(onSubmit)}>
+          <form className="space-y-5 border border-border bg-card p-6" noValidate onSubmit={form.handleSubmit(onSubmit)}>
             <p className="eyebrow text-muted-foreground">
               {SECTION_LABEL[selected.section_type] ?? selected.section_type}
             </p>

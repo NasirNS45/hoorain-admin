@@ -59,6 +59,7 @@ export const ImageUploadField = ({
       } else {
         onChange(urls[0] ?? "");
       }
+      toast.success("Image uploaded.");
     } catch (error) {
       const message = error instanceof ApiError ? error.message : "Could not upload this image.";
       toast.error(message);

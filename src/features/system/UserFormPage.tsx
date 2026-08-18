@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { FieldError, PageHeader } from "@/components/PageHeader";
+import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -88,6 +88,10 @@ export function UserFormPage() {
     }
   }
 
+  if (!isNew && existing.isLoading) {
+    return <LoadingState title="Loading user" body="Fetching this admin account." />;
+  }
+
   if (!isNew && existing.isError) {
     return (
       <PageHeader
@@ -105,7 +109,7 @@ export function UserFormPage() {
         title={isNew ? "Add admin user" : "Edit admin user"}
         description="Passwords are never shown after save. Deactivate an account instead of deleting it."
       />
-      <form className="space-y-5 border border-border bg-card p-6" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-5 border border-border bg-card p-6" noValidate onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
           <Input id="name" disabled={!canManageUsers} {...form.register("name")} />
@@ -113,7 +117,7 @@ export function UserFormPage() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" disabled={!canManageUsers} {...form.register("email")} />
+          <Input id="email" type="text" autoComplete="email" disabled={!canManageUsers} {...form.register("email")} />
           <FieldError message={form.formState.errors.email?.message} />
         </div>
         <div className="space-y-2">
