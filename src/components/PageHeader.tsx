@@ -1,0 +1,83 @@
+import type { ReactNode } from "react";
+import { Link } from "react-router";
+import { Button } from "@/components/ui/button";
+
+export function PageHeader({
+  eyebrow,
+  title,
+  description,
+  action,
+}: {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p className="eyebrow text-muted-foreground">{eyebrow}</p>
+        <h1 className="mt-1 font-display text-4xl">{title}</h1>
+        {description ? <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{description}</p> : null}
+      </div>
+      {action}
+    </div>
+  );
+}
+
+export function EmptyState({
+  title,
+  body,
+  action,
+}: {
+  title: string;
+  body: string;
+  action?: { to: string; label: string };
+}) {
+  return (
+    <div className="border border-border bg-card p-8">
+      <h2 className="font-display text-2xl">{title}</h2>
+      <p className="mt-2 max-w-xl text-sm text-muted-foreground">{body}</p>
+      {action ? (
+        <Button asChild className="mt-5">
+          <Link to={action.to}>{action.label}</Link>
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
+export function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="text-xs text-destructive">{message}</p>;
+}
+
+export function PaginationBar({
+  page,
+  limit,
+  total,
+  onPage,
+}: {
+  page: number;
+  limit: number;
+  total: number;
+  onPage: (page: number) => void;
+}) {
+  const pages = Math.max(1, Math.ceil(total / limit));
+  if (total <= limit) return null;
+  return (
+    <div className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
+      <p>
+        {total} in the edit. Page {page} of {pages}.
+      </p>
+      <div className="flex gap-2">
+        <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPage(page - 1)}>
+          Previous
+        </Button>
+        <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => onPage(page + 1)}>
+          Next
+        </Button>
+      </div>
+    </div>
+  );
+}
