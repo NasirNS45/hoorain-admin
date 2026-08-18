@@ -59,11 +59,11 @@ export function App() {
         <Route path="/inventory" element={<StockPage />} />
         <Route path="/inventory/adjustments" element={<AdjustmentsPage />} />
         <Route path="/orders" element={<OrderListPage />} />
-        <Route path="/orders/pending" element={<OrderListPage group="pending" />} />
-        <Route path="/orders/confirmed" element={<OrderListPage group="confirmed" />} />
-        <Route path="/orders/processing" element={<OrderListPage group="processing" />} />
-        <Route path="/orders/delivered" element={<OrderListPage group="delivered" />} />
-        <Route path="/orders/cancelled" element={<OrderListPage group="cancelled" />} />
+        <Route path="/orders/pending" element={<Navigate to="/orders?status=pending" replace />} />
+        <Route path="/orders/confirmed" element={<Navigate to="/orders?status=confirmed" replace />} />
+        <Route path="/orders/processing" element={<Navigate to="/orders?status=processing" replace />} />
+        <Route path="/orders/delivered" element={<Navigate to="/orders?status=delivered" replace />} />
+        <Route path="/orders/cancelled" element={<Navigate to="/orders?status=cancelled" replace />} />
         <Route path="/orders/:id" element={<OrderDetailPage />} />
         <Route path="/customers" element={<CustomerListPage />} />
         <Route path="/customers/:id" element={<CustomerDetailPage />} />

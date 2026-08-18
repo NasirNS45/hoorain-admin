@@ -45,17 +45,7 @@ const NAV: (NavItem | NavGroup)[] = [
       { to: "/inventory/adjustments", label: "Adjustments" },
     ],
   },
-  {
-    label: "Orders",
-    items: [
-      { to: "/orders", label: "All Orders" },
-      { to: "/orders/pending", label: "Pending" },
-      { to: "/orders/confirmed", label: "Confirmed" },
-      { to: "/orders/processing", label: "Processing" },
-      { to: "/orders/delivered", label: "Delivered" },
-      { to: "/orders/cancelled", label: "Cancelled" },
-    ],
-  },
+  { to: "/orders", label: "Orders" },
   { to: "/customers", label: "Customers" },
   {
     label: "Content",

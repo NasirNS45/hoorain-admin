@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,42 +13,54 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useOrders } from "@/hooks/useOrders";
-import { formatPkr } from "@/lib/utils";
+import { cn, formatPkr } from "@/lib/utils";
 
-const COPY: Record<string, { title: string; description: string; empty: string }> = {
+const GROUPS = ["all", "pending", "confirmed", "processing", "delivered", "cancelled"] as const;
+
+type OrderGroup = (typeof GROUPS)[number];
+
+const COPY: Record<OrderGroup, { label: string; description: string; empty: string }> = {
   all: {
-    title: "Orders",
-    description: "Prepaid orders from the storefront. Payment is card via Safepay. JazzCash and EasyPaisa are coming soon.",
+    label: "All",
+    description:
+      "Prepaid orders from the storefront. Payment is card via Safepay. JazzCash and EasyPaisa are coming soon.",
     empty: "No orders yet. When a shopper pays on Safepay, the order will appear here.",
   },
   pending: {
-    title: "Pending orders",
+    label: "Pending",
     description: "Unpaid checkouts waiting on Safepay. Stock is reserved until pay or cancel.",
     empty: "No unpaid orders. Abandoned Safepay sessions will land here until they are cancelled.",
   },
   confirmed: {
-    title: "Confirmed orders",
+    label: "Confirmed",
     description: "Paid orders ready to pack. Payment already confirmed them.",
     empty: "No paid orders yet. Successful Safepay checkouts will list here.",
   },
   processing: {
-    title: "Processing orders",
+    label: "Processing",
     description: "Packed, ready, and out for delivery.",
     empty: "Nothing is being packed or delivered right now.",
   },
   delivered: {
-    title: "Delivered orders",
+    label: "Delivered",
     description: "Completed deliveries and their PKR totals.",
     empty: "No delivered orders yet.",
   },
   cancelled: {
-    title: "Cancelled orders",
+    label: "Cancelled",
     description: "Cancelled checkouts and returned pieces.",
     empty: "No cancelled or returned orders.",
   },
 };
 
-export function OrderListPage({ group = "all" }: { group?: keyof typeof COPY }) {
+function parseGroup(value: string | null): OrderGroup {
+  if (value && GROUPS.includes(value as OrderGroup)) return value as OrderGroup;
+  return "all";
+}
+
+export function OrderListPage() {
+  const [params, setParams] = useSearchParams();
+  const group = parseGroup(params.get("status"));
   const copy = COPY[group];
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
@@ -59,9 +71,34 @@ export function OrderListPage({ group = "all" }: { group?: keyof typeof COPY }) 
     status: group === "all" ? undefined : group,
   });
 
+  function setGroup(next: OrderGroup) {
+    const nextParams = new URLSearchParams(params);
+    if (next === "all") nextParams.delete("status");
+    else nextParams.set("status", next);
+    setParams(nextParams, { replace: true });
+    setPage(1);
+  }
+
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="Orders" title={copy.title} description={copy.description} />
+      <PageHeader eyebrow="Orders" title="Orders" description={copy.description} />
+      <div className="flex flex-wrap gap-1 border-b border-border">
+        {GROUPS.map((item) => (
+          <button
+            key={item}
+            type="button"
+            onClick={() => setGroup(item)}
+            className={cn(
+              "-mb-px border-b-2 px-3 py-2 text-sm",
+              group === item
+                ? "border-foreground text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {COPY[item].label}
+          </button>
+        ))}
+      </div>
       <form
         className="flex max-w-md gap-2"
         onSubmit={(event) => {
