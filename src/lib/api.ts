@@ -5,15 +5,45 @@ const TOKEN_KEY = "hoorain_access_token";
 
 let accessToken: string | null = sessionStorage.getItem(TOKEN_KEY);
 let refreshPromise: Promise<boolean> | null = null;
+let sessionExpiredEmitted = false;
+
+const tokenListeners = new Set<() => void>();
+const sessionExpiredListeners = new Set<() => void>();
 
 export function getAccessToken() {
   return accessToken;
 }
 
+export function subscribeAccessToken(listener: () => void): () => void {
+  tokenListeners.add(listener);
+  return () => {
+    tokenListeners.delete(listener);
+  };
+}
+
+export function subscribeSessionExpired(listener: () => void): () => void {
+  sessionExpiredListeners.add(listener);
+  return () => {
+    sessionExpiredListeners.delete(listener);
+  };
+}
+
 export function setAccessToken(token: string | null) {
   accessToken = token;
-  if (token) sessionStorage.setItem(TOKEN_KEY, token);
-  else sessionStorage.removeItem(TOKEN_KEY);
+  if (token) {
+    sessionStorage.setItem(TOKEN_KEY, token);
+    sessionExpiredEmitted = false;
+  } else {
+    sessionStorage.removeItem(TOKEN_KEY);
+  }
+  tokenListeners.forEach((listener) => listener());
+}
+
+function emitSessionExpired(): void {
+  if (sessionExpiredEmitted) return;
+  sessionExpiredEmitted = true;
+  setAccessToken(null);
+  sessionExpiredListeners.forEach((listener) => listener());
 }
 
 export class ApiError extends Error {
@@ -42,7 +72,6 @@ async function refreshAccess(): Promise<boolean> {
     credentials: "include",
   });
   if (!response.ok) {
-    setAccessToken(null);
     return false;
   }
   const payload = (await response.json()) as Envelope<{ access_token: string }>;
@@ -74,6 +103,7 @@ async function requestPayload<T>(
     });
     const ok = await refreshPromise;
     if (ok) return requestPayload<T>(path, init, false);
+    emitSessionExpired();
   }
 
   if (response.status === 204) {

@@ -1,5 +1,6 @@
+import { useSyncExternalStore } from "react";
 import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api, getAccessToken, setAccessToken } from "@/lib/api";
+import { api, getAccessToken, setAccessToken, subscribeAccessToken } from "@/lib/api";
 import type { AdminUser, DashboardResponse, TokenResponse } from "@/types/api";
 
 export const queryClient = new QueryClient({
@@ -11,11 +12,16 @@ export const queryClient = new QueryClient({
   },
 });
 
+export function useAccessToken() {
+  return useSyncExternalStore(subscribeAccessToken, getAccessToken, getAccessToken);
+}
+
 export function useCurrentUser() {
+  const token = useAccessToken();
   return useQuery({
     queryKey: ["auth", "me"],
     queryFn: () => api.get<AdminUser>("/api/v1/auth/me"),
-    enabled: Boolean(getAccessToken()),
+    enabled: Boolean(token),
     staleTime: 60_000,
   });
 }

@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from "react-router";
+import { useEffect } from "react";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { BrandFormPage } from "@/features/catalog/BrandFormPage";
@@ -28,61 +29,80 @@ import { StoreSettingsPage } from "@/features/store/StoreSettingsPage";
 import { AuditPage } from "@/features/system/AuditPage";
 import { UserFormPage } from "@/features/system/UserFormPage";
 import { UserListPage } from "@/features/system/UserListPage";
-import { useCurrentUser } from "@/hooks/useAuth";
-import { getAccessToken } from "@/lib/api";
+import { queryClient, useAccessToken, useCurrentUser } from "@/hooks/useAuth";
+import { subscribeSessionExpired } from "@/lib/api";
+
+function SessionExpiredBridge() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    return subscribeSessionExpired(() => {
+      queryClient.clear();
+      if (location.pathname !== "/login") {
+        navigate("/login", { replace: true });
+      }
+    });
+  }, [navigate, location.pathname]);
+
+  return null;
+}
 
 function LoginGate() {
-  const hasToken = Boolean(getAccessToken());
+  const token = useAccessToken();
   const me = useCurrentUser();
-  if (hasToken && me.data) return <Navigate to="/" replace />;
+  if (token && me.data) return <Navigate to="/" replace />;
   return <LoginPage />;
 }
 
 export function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginGate />} />
-      <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/products" element={<ProductListPage />} />
-        <Route path="/products/new" element={<ProductFormPage />} />
-        <Route path="/products/:id" element={<ProductFormPage />} />
-        <Route path="/categories" element={<CategoryListPage />} />
-        <Route path="/categories/new" element={<CategoryFormPage />} />
-        <Route path="/categories/:id" element={<CategoryFormPage />} />
-        <Route path="/brands" element={<BrandListPage />} />
-        <Route path="/brands/new" element={<BrandFormPage />} />
-        <Route path="/brands/:id" element={<BrandFormPage />} />
-        <Route path="/collections" element={<CollectionListPage />} />
-        <Route path="/collections/new" element={<CollectionFormPage />} />
-        <Route path="/collections/:id" element={<CollectionFormPage />} />
-        <Route path="/inventory" element={<StockPage />} />
-        <Route path="/inventory/adjustments" element={<AdjustmentsPage />} />
-        <Route path="/orders" element={<OrderListPage />} />
-        <Route path="/orders/pending" element={<Navigate to="/orders?status=pending" replace />} />
-        <Route path="/orders/confirmed" element={<Navigate to="/orders?status=confirmed" replace />} />
-        <Route path="/orders/processing" element={<Navigate to="/orders?status=processing" replace />} />
-        <Route path="/orders/delivered" element={<Navigate to="/orders?status=delivered" replace />} />
-        <Route path="/orders/cancelled" element={<Navigate to="/orders?status=cancelled" replace />} />
-        <Route path="/orders/:id" element={<OrderDetailPage />} />
-        <Route path="/customers" element={<CustomerListPage />} />
-        <Route path="/customers/:id" element={<CustomerDetailPage />} />
-        <Route path="/content/homepage" element={<HomepagePage />} />
-        <Route path="/content/hero" element={<HeroPage />} />
-        <Route path="/content/sections" element={<SectionsPage />} />
-        <Route path="/store/settings" element={<StoreSettingsPage />} />
-        <Route path="/store/shipping" element={<ShippingPage />} />
-        <Route path="/store/policies" element={<PoliciesPage />} />
-        <Route path="/store/social" element={<SocialPage />} />
-        <Route path="/discounts" element={<DiscountListPage />} />
-        <Route path="/discounts/new" element={<DiscountFormPage />} />
-        <Route path="/discounts/:id" element={<DiscountFormPage />} />
-        <Route path="/system/users" element={<UserListPage />} />
-        <Route path="/system/users/new" element={<UserFormPage />} />
-        <Route path="/system/users/:id" element={<UserFormPage />} />
-        <Route path="/system/audit" element={<AuditPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <>
+      <SessionExpiredBridge />
+      <Routes>
+        <Route path="/login" element={<LoginGate />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/products" element={<ProductListPage />} />
+          <Route path="/products/new" element={<ProductFormPage />} />
+          <Route path="/products/:id" element={<ProductFormPage />} />
+          <Route path="/categories" element={<CategoryListPage />} />
+          <Route path="/categories/new" element={<CategoryFormPage />} />
+          <Route path="/categories/:id" element={<CategoryFormPage />} />
+          <Route path="/brands" element={<BrandListPage />} />
+          <Route path="/brands/new" element={<BrandFormPage />} />
+          <Route path="/brands/:id" element={<BrandFormPage />} />
+          <Route path="/collections" element={<CollectionListPage />} />
+          <Route path="/collections/new" element={<CollectionFormPage />} />
+          <Route path="/collections/:id" element={<CollectionFormPage />} />
+          <Route path="/inventory" element={<StockPage />} />
+          <Route path="/inventory/adjustments" element={<AdjustmentsPage />} />
+          <Route path="/orders" element={<OrderListPage />} />
+          <Route path="/orders/pending" element={<Navigate to="/orders?status=pending" replace />} />
+          <Route path="/orders/confirmed" element={<Navigate to="/orders?status=confirmed" replace />} />
+          <Route path="/orders/processing" element={<Navigate to="/orders?status=processing" replace />} />
+          <Route path="/orders/delivered" element={<Navigate to="/orders?status=delivered" replace />} />
+          <Route path="/orders/cancelled" element={<Navigate to="/orders?status=cancelled" replace />} />
+          <Route path="/orders/:id" element={<OrderDetailPage />} />
+          <Route path="/customers" element={<CustomerListPage />} />
+          <Route path="/customers/:id" element={<CustomerDetailPage />} />
+          <Route path="/content/homepage" element={<HomepagePage />} />
+          <Route path="/content/hero" element={<HeroPage />} />
+          <Route path="/content/sections" element={<SectionsPage />} />
+          <Route path="/store/settings" element={<StoreSettingsPage />} />
+          <Route path="/store/shipping" element={<ShippingPage />} />
+          <Route path="/store/policies" element={<PoliciesPage />} />
+          <Route path="/store/social" element={<SocialPage />} />
+          <Route path="/discounts" element={<DiscountListPage />} />
+          <Route path="/discounts/new" element={<DiscountFormPage />} />
+          <Route path="/discounts/:id" element={<DiscountFormPage />} />
+          <Route path="/system/users" element={<UserListPage />} />
+          <Route path="/system/users/new" element={<UserFormPage />} />
+          <Route path="/system/users/:id" element={<UserFormPage />} />
+          <Route path="/system/audit" element={<AuditPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }
