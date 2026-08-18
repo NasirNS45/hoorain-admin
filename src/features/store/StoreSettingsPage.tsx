@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
+import { PanelSkeleton } from "@/components/loading";
+import { FieldError, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -120,7 +121,7 @@ export function StoreSettingsPage() {
           title="Settings"
           description="Brand name, contact, WhatsApp number, and footer copy used on the storefront."
         />
-        <LoadingState title="Loading settings" body="Fetching store settings." />
+        <PanelSkeleton />
       </div>
     );
   }
@@ -171,7 +172,7 @@ export function StoreSettingsPage() {
           <Input id="footer" disabled={!canUpdateSettings} {...form.register("footer")} />
         </div>
         {canUpdateSettings ? (
-          <Button type="submit" disabled={patch.isPending}>
+          <Button type="submit" pending={patch.isPending}>
             {patch.isPending ? "Saving" : "Save settings"}
           </Button>
         ) : (

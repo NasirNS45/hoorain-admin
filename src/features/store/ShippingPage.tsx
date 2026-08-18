@@ -4,7 +4,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
+import { PanelSkeleton } from "@/components/loading";
+import { FieldError, PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -129,7 +130,7 @@ export function ShippingPage() {
           title="Shipping"
           description="Default fee, free-delivery threshold, and optional city overrides. Pickup stays free."
         />
-        <LoadingState title="Loading shipping" body="Fetching rates and city overrides." />
+        <PanelSkeleton />
       </div>
     );
   }
@@ -159,7 +160,7 @@ export function ShippingPage() {
           </div>
         </div>
         {canUpdateSettings ? (
-          <Button type="submit" disabled={patch.isPending}>
+          <Button type="submit" pending={patch.isPending}>
             {patch.isPending ? "Saving" : "Save rates"}
           </Button>
         ) : null}
@@ -212,7 +213,7 @@ export function ShippingPage() {
               <Input placeholder="Fee or blank" {...cityForm.register("shipping_fee")} />
               <FieldError message={cityForm.formState.errors.shipping_fee?.message} />
             </div>
-            <Button type="submit" disabled={saveCity.isPending}>
+            <Button type="submit" pending={saveCity.isPending}>
               {saveCity.isPending ? "Adding" : "Add city"}
             </Button>
           </form>

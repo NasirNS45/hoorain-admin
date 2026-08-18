@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
+import { PanelSkeleton } from "@/components/loading";
+import { FieldError, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -84,7 +85,7 @@ export function SocialPage() {
           title="Social Links"
           description="Instagram, Facebook, and TikTok URLs for the footer and follow section."
         />
-        <LoadingState title="Loading social links" body="Fetching Instagram, Facebook, and TikTok URLs." />
+        <PanelSkeleton />
       </div>
     );
   }
@@ -117,7 +118,7 @@ export function SocialPage() {
           <FieldError message={form.formState.errors.tiktok_url?.message} />
         </div>
         {canUpdateSettings ? (
-          <Button type="submit" disabled={patch.isPending}>
+          <Button type="submit" pending={patch.isPending}>
             {patch.isPending ? "Saving" : "Save links"}
           </Button>
         ) : (

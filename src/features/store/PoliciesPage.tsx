@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { LoadingState, PageHeader } from "@/components/PageHeader";
+import { PanelSkeleton } from "@/components/loading";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -65,7 +66,7 @@ export function PoliciesPage() {
           title="Policies"
           description="Shipping, returns, privacy, and terms used on product accordions and help pages."
         />
-        <LoadingState title="Loading policies" body="Fetching shipping, returns, privacy, and terms." />
+        <PanelSkeleton />
       </div>
     );
   }
@@ -95,7 +96,7 @@ export function PoliciesPage() {
           <Textarea id="terms" rows={4} disabled={!canUpdateSettings} {...form.register("terms")} />
         </div>
         {canUpdateSettings ? (
-          <Button type="submit" disabled={patch.isPending}>
+          <Button type="submit" pending={patch.isPending}>
             {patch.isPending ? "Saving" : "Save policies"}
           </Button>
         ) : (

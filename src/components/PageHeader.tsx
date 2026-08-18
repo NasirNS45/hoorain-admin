@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
+import { FrameSpinner } from "@/components/loading";
 
 export function PageHeader({
   eyebrow,
@@ -55,8 +56,9 @@ export function LoadingState({
   body: string;
 }) {
   return (
-    <div className="border border-border bg-card p-8">
-      <h2 className="font-display text-2xl">{title}</h2>
+    <div className="border border-border bg-card p-8" role="status" aria-live="polite" aria-busy="true">
+      <FrameSpinner className="size-4" />
+      <h2 className="mt-4 font-display text-2xl">{title}</h2>
       <p className="mt-2 max-w-xl text-sm text-muted-foreground">{body}</p>
     </div>
   );

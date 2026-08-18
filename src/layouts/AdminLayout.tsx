@@ -11,6 +11,7 @@ import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { BrandMark } from "@/components/BrandMark";
+import { FrameSpinner } from "@/components/loading";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -244,7 +245,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                   });
                 }}
               >
-                <LogOut className="h-4 w-4" />
+                {logout.isPending ? <FrameSpinner /> : <LogOut className="h-4 w-4" />}
                 {logout.isPending ? "Signing out" : "Logout"}
               </DropdownMenuItem>
             </DropdownMenuContent>

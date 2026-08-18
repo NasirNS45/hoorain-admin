@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ApiError, api, mediaPreviewUrl } from "@/lib/api";
 import type { MediaAsset, MediaFolder } from "@/types/api";
+import { UploadProgress } from "@/components/loading";
 
 type ImageUploadFieldProps = {
   id: string;
@@ -103,7 +104,7 @@ export const ImageUploadField = ({
           ? "Uploading."
           : hint ?? "Paste a URL or choose a JPEG, PNG, WebP, or GIF. Maximum 8 MB."}
       </p>
-      {previews.length > 0 ? (
+      {(previews.length > 0 || uploading) ? (
         <div className="flex flex-wrap gap-2">
           {previews.slice(0, 8).map((src) => (
             <img
@@ -113,6 +114,7 @@ export const ImageUploadField = ({
               className="h-20 w-20 border border-border object-cover"
             />
           ))}
+          {uploading ? <UploadProgress /> : null}
         </div>
       ) : null}
     </div>

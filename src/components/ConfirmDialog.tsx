@@ -27,7 +27,7 @@ export function ConfirmDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={pending}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={onConfirm} disabled={pending}>
+          <Button variant="destructive" onClick={onConfirm} pending={pending}>
             {pending ? "Working" : confirmLabel}
           </Button>
         </div>

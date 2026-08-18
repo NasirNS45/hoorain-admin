@@ -65,7 +65,7 @@ export function LoginPage() {
             />
             <FieldError message={form.formState.errors.password?.message} />
           </div>
-          <Button type="submit" className="w-full eyebrow h-11" disabled={login.isPending}>
+          <Button type="submit" className="w-full eyebrow h-11" pending={login.isPending}>
             {login.isPending ? "Signing in" : "Sign in"}
           </Button>
         </form>

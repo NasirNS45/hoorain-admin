@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { EmptyState, LoadingState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { TableSkeleton } from "@/components/loading";
+import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,12 +63,12 @@ export function CategoryListPage() {
         }}
       >
         <Input name="q" placeholder="Search categories" defaultValue={q} />
-        <Button type="submit" variant="outline" disabled={categories.isFetching}>
+        <Button type="submit" variant="outline" pending={categories.isFetching}>
           {categories.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
       {categories.isLoading ? (
-        <LoadingState title="Loading categories" body="Fetching the category list." />
+        <TableSkeleton columns={["Name", "Slug", "Status"]} />
       ) : categories.isError ? (
         <EmptyState title="Could not load categories" body="Try again in a moment." />
       ) : !categories.data?.data.length ? (

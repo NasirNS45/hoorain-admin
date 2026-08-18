@@ -3,7 +3,8 @@ import { Link, useParams } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { EmptyState, FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
+import { FormSkeleton } from "@/components/loading";
+import { EmptyState, FieldError, PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,7 +82,7 @@ function CustomerEditForm({ customer }: { customer: CustomerAdmin }) {
       </label>
       <p className="text-sm text-muted-foreground">Phone is identity and stays {customer.phone}.</p>
       {canUpdateCustomers ? (
-        <Button type="submit" disabled={update.isPending}>
+        <Button type="submit" pending={update.isPending}>
           {update.isPending ? "Saving" : "Save"}
         </Button>
       ) : null}
@@ -98,7 +99,7 @@ export function CustomerDetailPage() {
     return <EmptyState title="Customer not found" body="This customer could not be loaded." />;
   }
   if (customerQuery.isLoading || !customer) {
-    return <LoadingState title="Loading customer" body="Fetching the phone-first customer record." />;
+    return <FormSkeleton />;
   }
 
   return (

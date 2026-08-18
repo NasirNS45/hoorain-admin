@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ChartSkeleton, DashboardTableSkeleton } from "@/components/loading";
 import {
   Table,
   TableBody,
@@ -36,7 +37,7 @@ function Kpi({ label, value, loading }: { label: string; value: string | number;
         <p className="eyebrow text-muted-foreground">{label}</p>
       </CardHeader>
       <CardContent>
-        {loading ? <Skeleton className="h-8 w-20" /> : <p className="font-display text-3xl">{value}</p>}
+        {loading ? <Skeleton className="h-8 w-24" /> : <p className="font-display text-3xl">{value}</p>}
       </CardContent>
     </Card>
   );
@@ -108,7 +109,7 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent className="h-64">
             {isLoading ? (
-              <Skeleton className="h-full w-full" />
+              <ChartSkeleton />
             ) : data?.orders_over_time.length ? (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data.orders_over_time}>
@@ -132,7 +133,7 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent className="h-64">
             {isLoading ? (
-              <Skeleton className="h-full w-full" />
+              <ChartSkeleton />
             ) : data?.revenue_over_time.length ? (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data.revenue_over_time}>
@@ -156,7 +157,7 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent className="h-64">
             {isLoading ? (
-              <Skeleton className="h-full w-full" />
+              <ChartSkeleton />
             ) : data?.top_products.length ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.top_products}>
@@ -180,7 +181,7 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent className="h-64">
             {isLoading ? (
-              <Skeleton className="h-full w-full" />
+              <ChartSkeleton />
             ) : data?.orders_by_status.some((row) => row.count > 0) ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.orders_by_status}>
@@ -209,7 +210,7 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-40 w-full" />
+              <DashboardTableSkeleton columns={4} />
             ) : data?.recent_orders.length ? (
               <Table>
                 <TableHeader>
@@ -250,7 +251,7 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-40 w-full" />
+              <DashboardTableSkeleton columns={3} />
             ) : data?.low_stock_products.length ? (
               <Table>
                 <TableHeader>

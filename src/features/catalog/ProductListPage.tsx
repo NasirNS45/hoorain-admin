@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { EmptyState, LoadingState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { TableSkeleton } from "@/components/loading";
+import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -85,12 +86,12 @@ export function ProductListPage() {
           <option value="ACTIVE">Active</option>
           <option value="ARCHIVED">Archived</option>
         </NativeSelect>
-        <Button type="submit" variant="outline" disabled={products.isFetching}>
+        <Button type="submit" variant="outline" pending={products.isFetching}>
           {products.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
       {products.isLoading ? (
-        <LoadingState title="Loading products" body="Fetching pieces in the edit." />
+        <TableSkeleton columns={["Piece", "SKU", "Brand", "Price", "Stock", "Status"]} />
       ) : products.isError ? (
         <EmptyState title="Could not load products" body="The edit could not be fetched. Try again in a moment." />
       ) : !products.data?.data.length ? (

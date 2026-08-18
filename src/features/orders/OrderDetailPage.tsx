@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link, useParams } from "react-router";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { EmptyState, LoadingState, PageHeader } from "@/components/PageHeader";
+import { FormSkeleton } from "@/components/loading";
+import { EmptyState, PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -102,7 +103,7 @@ export function OrderDetailPage() {
     return <EmptyState title="Order not found" body="This order could not be loaded." />;
   }
   if (orderQuery.isLoading || !order) {
-    return <LoadingState title="Loading order" body="Fetching the prepaid order from the API." />;
+    return <FormSkeleton fields={7} />;
   }
 
   const actions = ACTIONS[order.status] ?? [];
@@ -137,7 +138,7 @@ export function OrderDetailPage() {
                 if (action.destructive) setPendingStatus(action.status);
                 else void handleStatus(action.status);
               }}
-              disabled={updateStatus.isPending}
+              pending={updateStatus.isPending}
             >
               {updateStatus.isPending ? "Updating" : action.label}
             </Button>
@@ -230,7 +231,7 @@ export function OrderDetailPage() {
             }}
           >
             <Textarea value={note} onChange={(event) => setNote(event.target.value)} placeholder="Add an internal note" />
-            <Button type="submit" disabled={addNote.isPending || !note.trim()}>
+            <Button type="submit" pending={addNote.isPending} disabled={!note.trim()}>
               {addNote.isPending ? "Adding" : "Add note"}
             </Button>
           </form>

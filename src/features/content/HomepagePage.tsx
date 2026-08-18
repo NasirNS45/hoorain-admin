@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { toast } from "sonner";
-import { EmptyState, LoadingState, PageHeader } from "@/components/PageHeader";
+import { PanelSkeleton } from "@/components/loading";
+import { EmptyState, PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useHeroes, useSections, useUpdateSection } from "@/hooks/useContent";
@@ -49,7 +50,7 @@ export function HomepagePage() {
       />
 
       {heroes.isLoading || sections.isLoading ? (
-        <LoadingState title="Loading homepage" body="Fetching hero and section copy." />
+        <PanelSkeleton />
       ) : (
         <>
       {active ? (
@@ -92,7 +93,7 @@ export function HomepagePage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={updateSection.isPending}
+                    pending={updateSection.isPending && updateSection.variables?.id === section.id}
                     onClick={() => void toggleVisible(section.id, section.is_visible)}
                   >
                     {updateSection.isPending && updateSection.variables?.id === section.id

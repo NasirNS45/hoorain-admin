@@ -5,7 +5,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { ImageUploadField } from "@/components/ImageUploadField";
-import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
+import { FormSkeleton } from "@/components/loading";
+import { FieldError, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -94,7 +95,7 @@ export function CategoryFormPage() {
   }
 
   if (!isNew && existing.isLoading) {
-    return <LoadingState title="Loading category" body="Fetching this category." />;
+    return <FormSkeleton />;
   }
 
   if (!isNew && existing.isError) {
@@ -164,7 +165,7 @@ export function CategoryFormPage() {
           <Textarea id="seo_description" disabled={!canWrite} {...form.register("seo_description")} />
         </div>
         {canWrite ? (
-          <Button type="submit" disabled={save.isPending}>
+          <Button type="submit" pending={save.isPending}>
             {save.isPending ? "Saving" : "Save category"}
           </Button>
         ) : (

@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { EmptyState, LoadingState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { TableSkeleton } from "@/components/loading";
+import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,12 +63,12 @@ export function BrandListPage() {
         }}
       >
         <Input name="q" placeholder="Search brands" defaultValue={q} />
-        <Button type="submit" variant="outline" disabled={brands.isFetching}>
+        <Button type="submit" variant="outline" pending={brands.isFetching}>
           {brands.isFetching ? "Searching" : "Search"}
         </Button>
       </form>
       {brands.isLoading ? (
-        <LoadingState title="Loading brands" body="Fetching catalogue labels." />
+        <TableSkeleton columns={["Name", "Slug", "Status"]} />
       ) : brands.isError ? (
         <EmptyState title="Could not load brands" body="The catalogue labels could not be fetched. Try again in a moment." />
       ) : !brands.data?.data.length ? (

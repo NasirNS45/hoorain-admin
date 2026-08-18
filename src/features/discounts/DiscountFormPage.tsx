@@ -4,7 +4,8 @@ import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
+import { FormSkeleton } from "@/components/loading";
+import { FieldError, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -127,7 +128,7 @@ export function DiscountFormPage() {
   }
 
   if (!isNew && existing.isLoading) {
-    return <LoadingState title="Loading campaign" body="Fetching this sale campaign." />;
+    return <FormSkeleton />;
   }
 
   if (!isNew && existing.isError) {
@@ -231,7 +232,7 @@ export function DiscountFormPage() {
           Active
         </label>
         {canWrite ? (
-          <Button type="submit" disabled={save.isPending}>
+          <Button type="submit" pending={save.isPending}>
             {save.isPending ? "Saving" : "Save campaign"}
           </Button>
         ) : (

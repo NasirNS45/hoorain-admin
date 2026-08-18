@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { EmptyState, LoadingState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { TableSkeleton } from "@/components/loading";
+import { EmptyState, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
@@ -57,12 +58,12 @@ export function AuditPage() {
             </option>
           ))}
         </NativeSelect>
-        <Button type="submit" variant="outline" disabled={logs.isFetching}>
+        <Button type="submit" variant="outline" pending={logs.isFetching}>
           {logs.isFetching ? "Filtering" : "Filter"}
         </Button>
       </form>
       {logs.isLoading ? (
-        <LoadingState title="Loading activity" body="Fetching the audit log." />
+        <TableSkeleton columns={["When", "Who", "Action", "Entity"]} />
       ) : !canReadUsers || logs.isError ? (
         <EmptyState
           title="Could not load activity"

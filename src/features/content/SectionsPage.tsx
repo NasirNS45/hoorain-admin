@@ -4,7 +4,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { ImageUploadField } from "@/components/ImageUploadField";
-import { FieldError, LoadingState, PageHeader } from "@/components/PageHeader";
+import { PanelSkeleton } from "@/components/loading";
+import { FieldError, PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -128,7 +129,7 @@ export function SectionsPage() {
           title="Sections"
           description="Show, hide, and reorder the eight homepage blocks. Product grids still come from the catalogue."
         />
-        <LoadingState title="Loading sections" body="Fetching homepage sections." />
+        <PanelSkeleton />
       </div>
     );
   }
@@ -161,7 +162,8 @@ export function SectionsPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={index === 0 || reorder.isPending}
+                    pending={reorder.isPending}
+                    disabled={index === 0}
                     onClick={() => void move(section, -1)}
                   >
                     {reorder.isPending ? "Moving" : "Up"}
@@ -169,7 +171,8 @@ export function SectionsPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={index === rows.length - 1 || reorder.isPending}
+                    pending={reorder.isPending}
+                    disabled={index === rows.length - 1}
                     onClick={() => void move(section, 1)}
                   >
                     {reorder.isPending ? "Moving" : "Down"}
@@ -228,7 +231,7 @@ export function SectionsPage() {
               Visible on the storefront
             </label>
             {canUpdateContent ? (
-              <Button type="submit" disabled={updateSection.isPending}>
+              <Button type="submit" pending={updateSection.isPending}>
                 {updateSection.isPending ? "Saving" : "Save section"}
               </Button>
             ) : (

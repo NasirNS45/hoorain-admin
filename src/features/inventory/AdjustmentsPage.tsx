@@ -4,7 +4,8 @@ import { useSearchParams } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { EmptyState, FieldError, LoadingState, PageHeader, PaginationBar } from "@/components/PageHeader";
+import { TableSkeleton } from "@/components/loading";
+import { EmptyState, FieldError, PageHeader, PaginationBar } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -94,7 +95,7 @@ export function AdjustmentsPage() {
         }
       />
       {ledger.isLoading ? (
-        <LoadingState title="Loading adjustments" body="Fetching the inventory ledger." />
+        <TableSkeleton columns={["When", "Piece", "Type", "Qty", "Reason"]} />
       ) : ledger.isError ? (
         <EmptyState title="Could not load the ledger" body="Inventory adjustments could not be fetched." />
       ) : !ledger.data?.data.length ? (
@@ -186,7 +187,7 @@ export function AdjustmentsPage() {
               <Button type="button" variant="outline" disabled={create.isPending} onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={create.isPending}>
+              <Button type="submit" pending={create.isPending}>
                 {create.isPending ? "Saving" : "Apply"}
               </Button>
             </div>
