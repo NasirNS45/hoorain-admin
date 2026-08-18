@@ -335,12 +335,10 @@ export function ProductFormPage() {
         <section>
           <ImageUploadField
             id="images_text"
-            label="Image URLs"
+            label="Images"
             folder="catalog"
             multiple
             disabled={!canWrite}
-            placeholder="https://cdn.example.com/product-1.jpg"
-            hint="One URL per line, or upload files. The first image is the primary."
             value={imagesText}
             onChange={(value) => form.setValue("images_text", value, { shouldDirty: true })}
           />

@@ -125,10 +125,9 @@ export function CategoryFormPage() {
         </div>
         <ImageUploadField
           id="image"
-          label="Image URL"
+          label="Image"
           folder="catalog"
           disabled={!canWrite}
-          placeholder="https://cdn.example.com/cat-unstitched.jpg"
           value={imageValue}
           onChange={(value) => form.setValue("image", value, { shouldDirty: true })}
         />

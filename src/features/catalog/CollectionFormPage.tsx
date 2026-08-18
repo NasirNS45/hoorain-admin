@@ -131,7 +131,7 @@ export function CollectionFormPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           <ImageUploadField
             id="image"
-            label="Image URL"
+            label="Image"
             folder="catalog"
             disabled={!canWrite}
             value={imageValue}
@@ -139,7 +139,7 @@ export function CollectionFormPage() {
           />
           <ImageUploadField
             id="banner_image"
-            label="Banner URL"
+            label="Banner"
             folder="catalog"
             disabled={!canWrite}
             value={bannerValue}

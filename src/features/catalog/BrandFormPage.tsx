@@ -118,7 +118,7 @@ export function BrandFormPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           <ImageUploadField
             id="logo"
-            label="Logo URL"
+            label="Logo"
             folder="catalog"
             disabled={!canWrite}
             value={logoValue}
