@@ -56,7 +56,8 @@ async function requestPayload<T>(
   retry = true,
 ): Promise<Envelope<T>> {
   const headers = new Headers(init.headers);
-  if (!headers.has("Content-Type") && init.body) {
+  const isFormData = typeof FormData !== "undefined" && init.body instanceof FormData;
+  if (!headers.has("Content-Type") && init.body && !isFormData) {
     headers.set("Content-Type", "application/json");
   }
   if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
@@ -113,4 +114,12 @@ export const api = {
   put: <T>(path: string, body?: unknown) => request<T>(path, jsonInit("PUT", body)),
   patch: <T>(path: string, body?: unknown) => request<T>(path, jsonInit("PATCH", body)),
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
+  upload: <T>(path: string, body: FormData) => request<T>(path, { method: "POST", body }),
 };
+
+export function mediaPreviewUrl(path: string): string {
+  if (!path) return path;
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  const base = API_URL.replace(/\/$/, "");
+  return path.startsWith("/") ? `${base}${path}` : `${base}/${path}`;
+}

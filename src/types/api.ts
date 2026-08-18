@@ -1,3 +1,14 @@
+export type MediaFolder = "catalog" | "cms";
+
+export type MediaAsset = {
+  id: string;
+  url: string;
+  provider: string;
+  provider_key: string | null;
+  mime_type: string | null;
+  alt_text: string | null;
+};
+
 export type Envelope<T> = {
   data: T;
   message: string;

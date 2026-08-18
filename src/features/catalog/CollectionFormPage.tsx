@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { ImageUploadField } from "@/components/ImageUploadField";
 import { FieldError, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +52,8 @@ export function CollectionFormPage() {
       seo_description: "",
     },
   });
+  const imageValue = useWatch({ control: form.control, name: "image" }) ?? "";
+  const bannerValue = useWatch({ control: form.control, name: "banner_image" }) ?? "";
 
   useEffect(() => {
     if (!existing.data) return;
@@ -121,14 +124,22 @@ export function CollectionFormPage() {
           <Textarea id="description" disabled={!canWrite} {...form.register("description")} />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="image">Image URL</Label>
-            <Input id="image" disabled={!canWrite} {...form.register("image")} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="banner_image">Banner URL</Label>
-            <Input id="banner_image" disabled={!canWrite} {...form.register("banner_image")} />
-          </div>
+          <ImageUploadField
+            id="image"
+            label="Image URL"
+            folder="catalog"
+            disabled={!canWrite}
+            value={imageValue}
+            onChange={(value) => form.setValue("image", value, { shouldDirty: true })}
+          />
+          <ImageUploadField
+            id="banner_image"
+            label="Banner URL"
+            folder="catalog"
+            disabled={!canWrite}
+            value={bannerValue}
+            onChange={(value) => form.setValue("banner_image", value, { shouldDirty: true })}
+          />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="flex items-center gap-2 text-sm">

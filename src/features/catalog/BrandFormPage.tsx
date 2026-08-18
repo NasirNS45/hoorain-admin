@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { ImageUploadField } from "@/components/ImageUploadField";
 import { FieldError, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,6 +46,7 @@ export function BrandFormPage() {
       sort_order: 0,
     },
   });
+  const logoValue = useWatch({ control: form.control, name: "logo" }) ?? "";
 
   useEffect(() => {
     if (!existing.data) return;
@@ -109,10 +111,14 @@ export function BrandFormPage() {
           <Textarea id="description" disabled={!canWrite} {...form.register("description")} />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="logo">Logo URL</Label>
-            <Input id="logo" disabled={!canWrite} {...form.register("logo")} />
-          </div>
+          <ImageUploadField
+            id="logo"
+            label="Logo URL"
+            folder="catalog"
+            disabled={!canWrite}
+            value={logoValue}
+            onChange={(value) => form.setValue("logo", value, { shouldDirty: true })}
+          />
           <div className="space-y-2">
             <Label htmlFor="website_url">Website</Label>
             <Input id="website_url" disabled={!canWrite} {...form.register("website_url")} />

@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { ImageUploadField } from "@/components/ImageUploadField";
 import { FieldError, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,8 @@ export function HeroPage() {
       is_active: true,
     },
   });
+  const desktopImage = useWatch({ control: form.control, name: "desktop_image" }) ?? "";
+  const mobileImage = useWatch({ control: form.control, name: "mobile_image" }) ?? "";
 
   useEffect(() => {
     if (!current) return;
@@ -110,14 +113,22 @@ export function HeroPage() {
           <Textarea id="description" disabled={!canUpdateContent} {...form.register("description")} />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="desktop_image">Desktop image URL</Label>
-            <Input id="desktop_image" disabled={!canUpdateContent} {...form.register("desktop_image")} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="mobile_image">Mobile image URL</Label>
-            <Input id="mobile_image" disabled={!canUpdateContent} {...form.register("mobile_image")} />
-          </div>
+          <ImageUploadField
+            id="desktop_image"
+            label="Desktop image URL"
+            folder="cms"
+            disabled={!canUpdateContent}
+            value={desktopImage}
+            onChange={(value) => form.setValue("desktop_image", value, { shouldDirty: true })}
+          />
+          <ImageUploadField
+            id="mobile_image"
+            label="Mobile image URL"
+            folder="cms"
+            disabled={!canUpdateContent}
+            value={mobileImage}
+            onChange={(value) => form.setValue("mobile_image", value, { shouldDirty: true })}
+          />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">

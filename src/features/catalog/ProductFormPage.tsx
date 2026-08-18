@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { ImageUploadField } from "@/components/ImageUploadField";
 import { FieldError, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -150,6 +151,7 @@ export function ProductFormPage() {
   }, [existing.data, form]);
 
   const selectedCollections = useWatch({ control: form.control, name: "collection_ids" }) ?? [];
+  const imagesText = useWatch({ control: form.control, name: "images_text" }) ?? "";
 
   async function onSubmit(values: FormValues) {
     try {
@@ -328,15 +330,18 @@ export function ProductFormPage() {
           </div>
         </section>
 
-        <section className="space-y-2">
-          <Label htmlFor="images_text">Image URLs</Label>
-          <Textarea
+        <section>
+          <ImageUploadField
             id="images_text"
+            label="Image URLs"
+            folder="catalog"
+            multiple
             disabled={!canWrite}
             placeholder={"/media/catalog/product-1.jpg\n/media/catalog/detail-packaging.jpg"}
-            {...form.register("images_text")}
+            hint="One URL per line, or upload files. The first image is the primary."
+            value={imagesText}
+            onChange={(value) => form.setValue("images_text", value, { shouldDirty: true })}
           />
-          <p className="text-xs text-muted-foreground">One URL per line. The first image is the primary.</p>
         </section>
 
         <section className="space-y-3">

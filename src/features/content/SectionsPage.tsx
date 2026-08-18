@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { ImageUploadField } from "@/components/ImageUploadField";
 import { FieldError, PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -59,6 +60,8 @@ export function SectionsPage() {
       is_visible: true,
     },
   });
+  const imageValue = useWatch({ control: form.control, name: "image" }) ?? "";
+  const mobileImage = useWatch({ control: form.control, name: "mobile_image" }) ?? "";
 
   useEffect(() => {
     if (!selected) return;
@@ -181,14 +184,22 @@ export function SectionsPage() {
               <Textarea id="description" disabled={!canUpdateContent} {...form.register("description")} />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="image">Image URL</Label>
-                <Input id="image" disabled={!canUpdateContent} {...form.register("image")} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="mobile_image">Mobile image URL</Label>
-                <Input id="mobile_image" disabled={!canUpdateContent} {...form.register("mobile_image")} />
-              </div>
+              <ImageUploadField
+                id="image"
+                label="Image URL"
+                folder="cms"
+                disabled={!canUpdateContent}
+                value={imageValue}
+                onChange={(value) => form.setValue("image", value, { shouldDirty: true })}
+              />
+              <ImageUploadField
+                id="mobile_image"
+                label="Mobile image URL"
+                folder="cms"
+                disabled={!canUpdateContent}
+                value={mobileImage}
+                onChange={(value) => form.setValue("mobile_image", value, { shouldDirty: true })}
+              />
               <div className="space-y-2">
                 <Label htmlFor="button_text">Button</Label>
                 <Input id="button_text" disabled={!canUpdateContent} {...form.register("button_text")} />

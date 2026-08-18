@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { ImageUploadField } from "@/components/ImageUploadField";
 import { FieldError, PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +52,7 @@ export function CategoryFormPage() {
       seo_description: "",
     },
   });
+  const imageValue = useWatch({ control: form.control, name: "image" }) ?? "";
 
   useEffect(() => {
     if (!existing.data) return;
@@ -116,10 +118,15 @@ export function CategoryFormPage() {
           <Label htmlFor="description">Description</Label>
           <Textarea id="description" disabled={!canWrite} {...form.register("description")} />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="image">Image URL</Label>
-          <Input id="image" disabled={!canWrite} placeholder="/media/catalog/cat-unstitched.jpg" {...form.register("image")} />
-        </div>
+        <ImageUploadField
+          id="image"
+          label="Image URL"
+          folder="catalog"
+          disabled={!canWrite}
+          placeholder="/media/catalog/cat-unstitched.jpg"
+          value={imageValue}
+          onChange={(value) => form.setValue("image", value, { shouldDirty: true })}
+        />
         <div className="space-y-2">
           <Label htmlFor="parent_id">Parent</Label>
           <NativeSelect id="parent_id" disabled={!canWrite} {...form.register("parent_id")}>
