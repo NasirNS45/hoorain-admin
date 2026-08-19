@@ -1,7 +1,7 @@
 import type { Envelope } from "@/types/api";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
-const TOKEN_KEY = "hoorain_access_token";
+const TOKEN_KEY = "rifaq_access_token";
 
 let accessToken: string | null = sessionStorage.getItem(TOKEN_KEY);
 let refreshPromise: Promise<boolean> | null = null;

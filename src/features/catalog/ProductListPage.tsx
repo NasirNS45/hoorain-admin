@@ -68,7 +68,7 @@ export function ProductListPage() {
       <PageHeader
         eyebrow="Catalog"
         title="Products"
-        description="Pieces in the HOORAIN edit. Stock changes belong on the inventory ledger, not on this form after create."
+        description="Pieces in the RIFAQ edit. Stock changes belong on the inventory ledger, not on this form after create."
         action={
           canCreate ? (
             <Button asChild>

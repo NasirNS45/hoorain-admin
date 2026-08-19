@@ -159,7 +159,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           )}
         >
           <BrandMark className="h-8 w-8 shrink-0" />
-          {!collapsed && <span className="font-display text-2xl tracking-wide">HOORAIN</span>}
+          {!collapsed && <span className="font-display text-2xl tracking-wide">RIFAQ</span>}
           <Button
             variant="ghost"
             size="icon"
@@ -185,7 +185,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             <SheetContent className="flex flex-col overflow-hidden">
               <div className="mb-6 flex shrink-0 items-center gap-2">
                 <BrandMark className="h-8 w-8" />
-                <p className="font-display text-2xl">HOORAIN</p>
+                <p className="font-display text-2xl">RIFAQ</p>
               </div>
               <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1">
                 <SidebarNav collapsed={false} />

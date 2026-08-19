@@ -112,7 +112,7 @@ export function CollectionFormPage() {
       <PageHeader
         eyebrow="Catalog"
         title={isNew ? "Add collection" : "Edit collection"}
-        description="Collections group pieces for the storefront, including The HOORAIN Edit."
+        description="Collections group pieces for the storefront, including The RIFAQ Edit."
       />
       <form className="space-y-5 border border-border bg-card p-6" noValidate onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-2">

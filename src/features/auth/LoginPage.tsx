@@ -44,7 +44,7 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md border border-border bg-card p-8 sm:p-10">
         <BrandMark className="h-12 w-12" />
-        <p className="mt-5 eyebrow text-muted-foreground">HOORAIN</p>
+        <p className="mt-5 eyebrow text-muted-foreground">RIFAQ</p>
         <h1 className="mt-3 font-display text-4xl">Admin</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Sign in to manage the edit, orders, and WhatsApp confirmations.

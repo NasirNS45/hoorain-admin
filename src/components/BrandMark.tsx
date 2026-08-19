@@ -3,5 +3,5 @@ type BrandMarkProps = {
 };
 
 export const BrandMark = ({ className = "h-8 w-8" }: BrandMarkProps) => (
-  <img src="/mark.svg" alt="" width={64} height={64} className={className} />
+  <img src="/mark.png" alt="" width={64} height={64} className={className} />
 );

@@ -8,51 +8,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-function MarkSvg({
+function MarkImg({
   className,
   mode,
 }: {
   className?: string;
   mode: "trace" | "breathe";
 }) {
-  const traced = mode === "trace" ? "mark-trace" : undefined;
-  const letter = mode === "trace" ? "mark-fill" : undefined;
-
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 64 64"
+    <img
+      src="/mark.png"
+      alt=""
+      width={64}
+      height={64}
       className={cn(mode === "breathe" && "frame-breathe", className)}
       aria-hidden
-    >
-      <rect width="64" height="64" fill="#f8f5f0" />
-      <rect
-        x="5"
-        y="5"
-        width="54"
-        height="54"
-        fill="none"
-        stroke="#c4a98a"
-        strokeWidth="1.25"
-        className={traced}
-      />
-      <rect
-        x="8.75"
-        y="8.75"
-        width="46.5"
-        height="46.5"
-        fill="none"
-        stroke="#c4a98a"
-        strokeWidth="0.5"
-        className={traced}
-        style={mode === "trace" ? { animationDelay: "0.18s" } : undefined}
-      />
-      <path
-        fill="#1c1c1c"
-        d="M21 16h6v13h10V16h6v32h-6V33H27v15h-6V16z"
-        className={letter}
-      />
-    </svg>
+    />
   );
 }
 
@@ -78,8 +49,8 @@ export function SessionLoader() {
       aria-live="polite"
       aria-busy="true"
     >
-      <MarkSvg mode="trace" className="h-12 w-12" />
-      <p className="mt-5 eyebrow text-muted-foreground">HOORAIN admin</p>
+      <MarkImg mode="trace" className="h-12 w-12" />
+      <p className="mt-5 eyebrow text-muted-foreground">RIFAQ admin</p>
       <h1 className="mt-2 font-display text-3xl">Opening the edit</h1>
     </div>
   );

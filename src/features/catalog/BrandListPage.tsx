@@ -46,7 +46,7 @@ export function BrandListPage() {
       <PageHeader
         eyebrow="Catalog"
         title="Brands"
-        description="Catalogue labels only. HOORAIN is not an official retailer or authorised seller of these names."
+        description="Catalogue labels only. RIFAQ is not an official retailer or authorised seller of these names."
         action={
           canCreate ? (
             <Button asChild>
