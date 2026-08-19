@@ -158,8 +158,11 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             collapsed ? "flex-col gap-1 px-2 py-2" : "h-14 gap-2 px-3",
           )}
         >
-          <BrandMark className="h-9 w-9 shrink-0" />
-          {!collapsed && <BrandWordmark className="h-7 w-auto" />}
+          {collapsed ? (
+            <BrandMark className="h-9 w-9 shrink-0" />
+          ) : (
+            <BrandWordmark className="h-8 w-auto min-w-0 flex-1" />
+          )}
           <Button
             variant="ghost"
             size="icon"
