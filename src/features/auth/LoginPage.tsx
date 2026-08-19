@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { BrandMark } from "@/components/BrandMark";
+import { BrandLockup } from "@/components/BrandMark";
 import { FieldError } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,9 +43,8 @@ export function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md border border-border bg-card p-8 sm:p-10">
-        <BrandMark className="h-12 w-12" />
-        <p className="mt-5 eyebrow text-muted-foreground">RIFAQ</p>
-        <h1 className="mt-3 font-display text-4xl">Admin</h1>
+        <BrandLockup className="mx-auto h-44 w-auto" />
+        <h1 className="mt-6 font-display text-4xl">Admin</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Sign in to manage the edit, orders, and WhatsApp confirmations.
         </p>

@@ -10,7 +10,7 @@ import {
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { BrandMark } from "@/components/BrandMark";
+import { BrandMark, BrandWordmark } from "@/components/BrandMark";
 import { FrameSpinner } from "@/components/loading";
 import { Button } from "@/components/ui/button";
 import {
@@ -158,8 +158,8 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             collapsed ? "flex-col gap-1 px-2 py-2" : "h-14 gap-2 px-3",
           )}
         >
-          <BrandMark className="h-8 w-8 shrink-0" />
-          {!collapsed && <span className="font-display text-2xl tracking-wide">RIFAQ</span>}
+          <BrandMark className="h-9 w-9 shrink-0" />
+          {!collapsed && <BrandWordmark className="h-7 w-auto" />}
           <Button
             variant="ghost"
             size="icon"
@@ -184,8 +184,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             </SheetTrigger>
             <SheetContent className="flex flex-col overflow-hidden">
               <div className="mb-6 flex shrink-0 items-center gap-2">
-                <BrandMark className="h-8 w-8" />
-                <p className="font-display text-2xl">RIFAQ</p>
+                <BrandWordmark className="h-8 w-auto" />
               </div>
               <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1">
                 <SidebarNav collapsed={false} />

@@ -49,7 +49,7 @@ export function SessionLoader() {
       aria-live="polite"
       aria-busy="true"
     >
-      <MarkImg mode="trace" className="h-12 w-12" />
+      <MarkImg mode="breathe" className="h-24 w-24" />
       <p className="mt-5 eyebrow text-muted-foreground">RIFAQ admin</p>
       <h1 className="mt-2 font-display text-3xl">Opening the edit</h1>
     </div>
