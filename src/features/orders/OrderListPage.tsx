@@ -24,18 +24,18 @@ const COPY: Record<OrderGroup, { label: string; description: string; empty: stri
   all: {
     label: "All",
     description:
-      "Prepaid orders from the storefront. Payment is card via Safepay. JazzCash and EasyPaisa are coming soon.",
-    empty: "No orders yet. When a shopper pays on Safepay, the order will appear here.",
+      "Prepaid orders from the storefront. Payment is card, JazzCash, or EasyPaisa via Swich.",
+    empty: "No orders yet. When a shopper pays on Swich, the order will appear here.",
   },
   pending: {
     label: "Pending",
-    description: "Unpaid checkouts waiting on Safepay. Stock is reserved until pay or cancel.",
-    empty: "No unpaid orders. Abandoned Safepay sessions will land here until they are cancelled.",
+    description: "Unpaid checkouts waiting on Swich. Stock is reserved until pay or cancel.",
+    empty: "No unpaid orders. Abandoned Swich sessions will land here until they are cancelled.",
   },
   confirmed: {
     label: "Confirmed",
     description: "Paid orders ready to pack. Payment already confirmed them.",
-    empty: "No paid orders yet. Successful Safepay checkouts will list here.",
+    empty: "No paid orders yet. Successful Swich checkouts will list here.",
   },
   processing: {
     label: "Processing",

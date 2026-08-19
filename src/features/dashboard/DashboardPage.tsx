@@ -122,7 +122,7 @@ export function DashboardPage() {
               </ResponsiveContainer>
             ) : (
               <p className="text-sm text-muted-foreground">
-                No orders yet. Prepaid checkouts will appear here after Safepay payment.
+                No orders yet. Prepaid checkouts will appear here after Swich payment.
               </p>
             )}
           </CardContent>
@@ -242,7 +242,7 @@ export function DashboardPage() {
               </Table>
             ) : (
               <p className="text-sm text-muted-foreground">
-                No orders yet. Prepaid checkouts will appear here after Safepay payment.
+                No orders yet. Prepaid checkouts will appear here after Swich payment.
               </p>
             )}
           </CardContent>

@@ -216,7 +216,7 @@ export type OrderAdmin = {
   city: string | null;
   postal_code: string | null;
   notes: string | null;
-  safepay_tracker: string | null;
+  payment_reference: string | null;
   confirmed_at: string | null;
   delivered_at: string | null;
   cancelled_at: string | null;

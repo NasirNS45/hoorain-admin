@@ -165,7 +165,7 @@ export function OrderDetailPage() {
               "No street address."}
           </p>
           <p className="mt-4 text-muted-foreground">
-            Safepay tracker: {order.safepay_tracker ?? "Not assigned"}
+            Payment reference: {order.payment_reference ?? "Not assigned"}
           </p>
         </div>
       </section>
