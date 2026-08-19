@@ -161,7 +161,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           {collapsed ? (
             <BrandMark className="h-9 w-9 shrink-0" />
           ) : (
-            <BrandWordmark className="h-8 w-auto min-w-0 flex-1" />
+            <BrandWordmark className="h-8 w-auto" />
           )}
           <Button
             variant="ghost"

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { BrandMark } from "@/components/BrandMark";
 import {
   Table,
   TableBody,
@@ -16,13 +17,8 @@ function MarkImg({
   mode: "trace" | "breathe";
 }) {
   return (
-    <img
-      src="/mark.png"
-      alt=""
-      width={64}
-      height={64}
-      className={cn(mode === "breathe" && "frame-breathe", className)}
-      aria-hidden
+    <BrandMark
+      className={cn("h-16 w-16", mode === "breathe" && "frame-breathe", className)}
     />
   );
 }
