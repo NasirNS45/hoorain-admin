@@ -6,9 +6,31 @@ const stitch = "#c4a98a";
 
 const NeedleR = () => (
   <>
-    <rect x="4.5" y="4.5" width="55" height="55" fill="none" stroke={stitch} strokeWidth="1.25" />
-    <rect x="8" y="8" width="48" height="48" fill="none" stroke={stitch} strokeWidth="0.55" />
-    <g fill="none" stroke="currentColor" strokeWidth="2.45" strokeLinecap="round" strokeLinejoin="round">
+    <rect
+      x="4.5"
+      y="4.5"
+      width="55"
+      height="55"
+      fill="none"
+      stroke={stitch}
+      strokeWidth="1.25"
+    />
+    <rect
+      x="8"
+      y="8"
+      width="48"
+      height="48"
+      fill="none"
+      stroke={stitch}
+      strokeWidth="0.55"
+    />
+    <g
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.45"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <ellipse cx="24" cy="22.6" rx="4.65" ry="5.55" />
       <path d="M24 28.2V43.2" />
       <path d="M28.6 22.8c10.2-.9 18 4.4 18 11.4 0 7.4-7.6 11.8-22.6 11.8" />
@@ -45,13 +67,25 @@ const RifaqLetters = () => (
 );
 
 export const BrandMark = ({ className = "h-8 w-8" }: BrandMarkProps) => (
-  <svg viewBox="0 0 64 64" fill="none" className={`block shrink-0 ${className}`} role="img" aria-label="RIFAQ">
+  <svg
+    viewBox="0 0 64 64"
+    fill="none"
+    className={`block shrink-0 ${className}`}
+    role="img"
+    aria-label="RIFAQ"
+  >
     <NeedleR />
   </svg>
 );
 
 export const BrandWordmark = ({ className = "h-8 w-auto" }: BrandMarkProps) => (
-  <svg viewBox="0 0 196 64" fill="none" className={`block shrink-0 ${className}`} role="img" aria-label="RIFAQ">
+  <svg
+    viewBox="0 0 196 64"
+    fill="none"
+    className={`block shrink-0 ${className}`}
+    role="img"
+    aria-label="RIFAQ"
+  >
     <NeedleR />
     <g transform="translate(76 20)">
       <RifaqLetters />
@@ -60,7 +94,13 @@ export const BrandWordmark = ({ className = "h-8 w-auto" }: BrandMarkProps) => (
 );
 
 export const BrandLockup = ({ className = "h-28 w-auto" }: BrandMarkProps) => (
-  <svg viewBox="0 0 196 112" fill="none" className={`block shrink-0 ${className}`} role="img" aria-label="RIFAQ">
+  <svg
+    viewBox="0 0 196 112"
+    fill="none"
+    className={`block shrink-0 ${className}`}
+    role="img"
+    aria-label="RIFAQ"
+  >
     <g transform="translate(66 0)">
       <NeedleR />
     </g>
